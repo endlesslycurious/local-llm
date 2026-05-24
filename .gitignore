@@ -1,0 +1,30 @@
+# Model weight files — large binaries, never commit
+*.gguf
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+
+# Environment files and secrets
+.env
+.env.*
+*.key
+*.pem
+secrets/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
+
+# Logs generated locally
+*.log
+logs/
