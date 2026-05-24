@@ -19,6 +19,7 @@ Personal setup and model log for running LLMs locally on Apple Silicon.
 |------|-------------|
 | [`Setup.md`](Setup.md) | llama.cpp appliance setup with a dedicated `bender` service account |
 | [`Models.md`](Models.md) | Personal log of models tested — quant, speed, source URL, notes |
+| [`daemons/`](daemons/) | Per-model LaunchDaemon plists — copy and rename to deploy a model |
 
 ## Quick start
 

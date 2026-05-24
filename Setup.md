@@ -112,7 +112,13 @@ For coding assistant usage:
 
 A LaunchDaemon starts automatically at boot without requiring a user login — the right choice for an appliance-style server.
 
-From your main admin account:
+The [`daemons/`](daemons/) folder in this repo contains a ready-made plist for each tested model, named after the model file. To deploy one, copy it into place and rename it:
+
+```bash
+sudo cp daemons/<model>.plist /Library/LaunchDaemons/local.llama.server.plist
+```
+
+The plist content is shown below for reference. If creating manually:
 
 ```bash
 sudo nano /Library/LaunchDaemons/local.llama.server.plist
@@ -282,7 +288,44 @@ sudo launchctl kickstart -k system/local.llama.server
 
 ---
 
-## 14. Optional Enhancements
+## 14. Switching Models
+
+Each model in [`daemons/`](daemons/) has its own plist pre-configured with the right model path and context settings.
+
+**1. Copy the new model file onto the Mac Studio:**
+
+```bash
+sudo cp <model>.gguf /Users/bender/models/
+sudo chown bender:staff /Users/bender/models/<model>.gguf
+```
+
+**2. Deploy its plist:**
+
+```bash
+sudo cp daemons/<model>.plist /Library/LaunchDaemons/local.llama.server.plist
+sudo chown root:wheel /Library/LaunchDaemons/local.llama.server.plist
+sudo chmod 644 /Library/LaunchDaemons/local.llama.server.plist
+```
+
+**3. Reload the service:**
+
+```bash
+sudo launchctl bootout system/local.llama.server
+sudo launchctl bootstrap system /Library/LaunchDaemons/local.llama.server.plist
+```
+
+**4. Verify:**
+
+```bash
+curl http://localhost:8080/health
+tail -f /Users/bender/logs/llm.out
+```
+
+The old model file can be left in `/Users/bender/models/` for quick switching, or removed to free up disk space.
+
+---
+
+## 15. Optional Enhancements
 
 - Run a second model on port 8081 for a different use case
 - Add firewall rules to restrict access to trusted LAN hosts
