@@ -78,10 +78,10 @@ sudo chmod -R 555 /Users/bender/models
 
 ## 5. Configure Context Window (Mac Studio M2 Max, 32 GB)
 
-For a 32 GB Mac Studio M2 Max running a 26B Q4 model, a practical balance is:
+For a 32 GB Mac Studio M2 Max running Gemma 4 26B Q4, 64K context has been tested and works:
 
 ```text
-Context Window: 8192–12288
+Context Window: 65536
 Batch Size: 512
 GPU Layers: all (-1)
 ```
@@ -89,22 +89,17 @@ GPU Layers: all (-1)
 Recommended starting point:
 
 ```bash
---ctx-size 8192
+--ctx-size 65536
 --batch-size 512
 --ubatch-size 512
 --n-gpu-layers -1
 ```
 
 Notes:
-- 8192 provides a good balance of responsiveness and memory usage
-- 12288 is possible if memory pressure is acceptable
-- 16384+ will usually start hurting responsiveness on 32 GB systems
-- Larger context windows increase KV cache memory significantly
+- 65536 (64K) has been tested on this hardware with Gemma 4 26B Q4 and runs without memory pressure
+- macOS idle uses ~13 GB; Gemma 4 26B Q4 uses ~15 GB; 64K fits in the remaining headroom
+- 64K is near the practical ceiling on 32 GB — do not go higher
 - `--threads` controls CPU threads for non-GPU work; with all layers on GPU this rarely bottlenecks, but 8–10 is a reasonable value on M2 Max (12 performance cores)
-
-For coding assistant usage:
-- Use 8192 for interactive/editor use
-- Use a larger context only for deep architecture review or large refactors
 
 ---
 
@@ -148,7 +143,7 @@ Paste:
       <string>--port</string>
       <string>8080</string>
       <string>--ctx-size</string>
-      <string>8192</string>
+      <string>65536</string>
       <string>--batch-size</string>
       <string>512</string>
       <string>--ubatch-size</string>

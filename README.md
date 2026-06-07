@@ -4,6 +4,15 @@ Personal setup and model log for running LLMs locally on Apple Silicon.
 
 > **Reference guide:** [Best Local LLMs for Mac in 2026](https://insiderllm.com/guides/best-local-llms-mac-2026/) — model picks by memory tier, real performance numbers, hardware buying advice.
 
+## Requirements
+
+| | |
+|---|---|
+| **Context window** | 64K (65536 tokens) — tested on both current models |
+| **Runtime** | llama.cpp via Homebrew (`brew install llama.cpp`) |
+
+> **Note:** Models range from 15–20 GB. 64K context fits on 32 GB only with KV cache quantization (`-ctk q8_0 -ctv q8_0`) — see [`Models.md`](Models.md) for measured memory pressure data.
+
 ## Hardware
 
 | | |

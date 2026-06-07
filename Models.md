@@ -15,7 +15,24 @@ Add a row each time you pull and test a new model. Link directly to the HuggingF
 
 ---
 
-## On the radar
+## Config notes
+
+All tested models run at `--ctx-size 65536` (64K) with `-ctk q8_0 -ctv q8_0` KV cache quantization. Measured memory pressure with llama.cpp on 32 GB:
+
+**Baseline (llama.cpp not running):** ~91% free, ~1.5 GB wired. Activity Monitor reports ~13 GB "used" at idle, but the majority is reclaimable file cache — not real pressure.
+
+| Model | ctx | KV quant | Truly free (peak) | Compressor | Swap | Verdict |
+|-------|-----|----------|-------------------|------------|------|---------|
+| Gemma 4 26B Q4 | 64K | none | ~67 MB | ~1.5 GB | 0 | Tight |
+| Gemma 4 26B Q4 | 64K | q8_0 | ~875 MB | ~1.4 GB | 0 | Comfortable |
+| Qwen 3.6-35B Q4 | 64K | none | ~65 MB | ~3.4 GB | 0 | Marginal |
+| Qwen 3.6-35B Q4 | 64K | q8_0 | ~2.3 GB | ~1.6 GB | 0 | Comfortable |
+
+KV cache quantization (`q8_0`) halves KV cache memory with negligible quality impact — use it at 64K on 32 GB.
+
+---
+
+## Future Models
 
 Models from the insiderllm guide worth pulling next, suited to the 32–48 GB tier:
 
