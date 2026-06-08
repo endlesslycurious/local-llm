@@ -265,6 +265,36 @@ Example config:
 }
 ```
 
+### Zed example
+
+In Zed's `settings.json`, under `language_models`:
+
+```json
+"openai_compatible": {
+  "Freyr": {
+    "api_url": "http://freyr.local:8080/v1",
+    "available_models": [
+      {
+        "name": "gemma-4-26B-A4B-it-UD-Q4_K_M.gguf",
+        "max_tokens": 65536,
+        "max_output_tokens": 8192,
+        "max_completion_tokens": 8192,
+        "capabilities": {
+          "tools": true,
+          "images": false,
+          "parallel_tool_calls": false,
+          "prompt_cache_key": false,
+          "chat_completions": true,
+          "interleaved_reasoning": false
+        }
+      }
+    ]
+  }
+}
+```
+
+The model name must match the `id` returned by `GET /v1/models`. To enable vision, a separate mmproj file is required — see llama.cpp docs for `--mmproj`.
+
 ---
 
 ## 13. Updating
