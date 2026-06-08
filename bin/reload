@@ -1,0 +1,11 @@
+#!/bin/sh
+# Reload the llama-server LaunchDaemon.
+# Usage: sudo bin/reload
+# Use after deploying a new plist or to recover from memory pressure.
+
+PLIST=/Library/LaunchDaemons/local.llama.server.plist
+
+launchctl bootout system/local.llama.server 2>/dev/null || true
+launchctl bootstrap system "$PLIST"
+
+echo "llama-server reloaded"
