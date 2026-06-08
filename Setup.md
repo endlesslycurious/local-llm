@@ -276,7 +276,7 @@ In Zed's `settings.json`, under `language_models`:
     "available_models": [
       {
         "name": "gemma-4-26B-A4B-it-UD-Q4_K_M.gguf",
-        "max_tokens": 65536,
+        "max_tokens": 32768,
         "max_output_tokens": 8192,
         "max_completion_tokens": 8192,
         "capabilities": {
