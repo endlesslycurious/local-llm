@@ -57,3 +57,24 @@ For the full appliance setup (launchd service, service account, llama.cpp), see 
 | 192 GB+ | DeepSeek V4-Flash Q4–Q6 | Research-grade; 1M context window |
 
 **Rule of thumb:** model file ≤ 60–70% of total RAM to leave room for macOS, KV cache, and framework overhead.
+
+## Memory Management
+
+Memory pressure builds naturally over long sessions as the KV cache fills. Two habits that keep the system healthy:
+
+**Start a new thread between tasks** — each new conversation resets the KV cache, recovering ~400 MB of wired memory and giving the model a clean context.
+
+**Restart llama-server if pressure builds** — stopping and restarting the service fully recovers memory without a reboot. Compressor and free pages return to clean-start levels within seconds:
+
+```bash
+sudo launchctl bootout system/local.llama.server
+sudo launchctl bootstrap system /Library/LaunchDaemons/local.llama.server.plist
+```
+
+Check recovery with:
+
+```bash
+memory_pressure
+```
+
+A healthy idle state (model loaded, no active prompt) shows ~25% free, compressor under 500 MB, and zero swap.
