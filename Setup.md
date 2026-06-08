@@ -319,12 +319,16 @@ Each model in [`daemons/`](daemons/) has its own plist pre-configured with the r
 
 **1. Copy the new model file onto the Mac Studio:**
 
+Typically I download the file from [Hugging Face](https://huggingface.co/) or similar online repository:
+
 ```bash
 sudo cp <model>.gguf /Users/bender/models/
 sudo chown bender:staff /Users/bender/models/<model>.gguf
 ```
 
 **2. Deploy its plist:**
+
+The convience script `bin/deploy` provides this functionality, call it with `sudo bin/deploy <model>`:
 
 ```bash
 sudo cp daemons/<model>.plist /Library/LaunchDaemons/local.llama.server.plist
@@ -333,6 +337,8 @@ sudo chmod 644 /Library/LaunchDaemons/local.llama.server.plist
 ```
 
 **3. Reload the service:**
+
+The convience script `bin/reload` provides this functionality, call it with `sudo bin/reload`:
 
 ```bash
 sudo launchctl bootout system/local.llama.server
