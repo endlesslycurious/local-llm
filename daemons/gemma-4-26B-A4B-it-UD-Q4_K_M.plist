@@ -29,9 +29,17 @@
       <string>--ubatch-size</string>
       <string>512</string>
       <string>--threads</string>
-      <string>8</string>
+      <string>16</string>
       <string>--n-gpu-layers</string>
       <string>-1</string>
+      <string>--temp</string>
+      <string>0.25</string>
+      <string>--top-p</string>
+      <string>0.9</string>
+      <string>--repeat-penalty</string>
+      <string>1.08</string>
+      <string>--repeat-last-n</string>
+      <string>256</string>
     </array>
 
     <key>RunAtLoad</key>
