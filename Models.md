@@ -17,9 +17,11 @@ Add a row each time you pull and test a new model. Link directly to the HuggingF
 
 ## Config notes
 
-All tested models run at `--ctx-size 65536` (64K) with `-ctk q8_0 -ctv q8_0` KV cache quantization. Measured memory pressure with llama.cpp on 32 GB:
+All tested models run at `--ctx-size 32768` (32K). 64K was tested and works but runs the system closer to the memory ceiling — 32K gives ~1 GB more headroom and is sufficient for coding assistant use.
 
 **Baseline (llama.cpp not running):** ~91% free, ~1.5 GB wired. Activity Monitor reports ~13 GB "used" at idle, but the majority is reclaimable file cache — not real pressure.
+
+### KV cache quantization
 
 | Model | ctx | KV quant | Truly free (peak) | Compressor | Swap | Verdict |
 |-------|-----|----------|-------------------|------------|------|---------|
@@ -27,8 +29,28 @@ All tested models run at `--ctx-size 65536` (64K) with `-ctk q8_0 -ctv q8_0` KV 
 | Gemma 4 26B Q4 | 64K | q8_0 | ~875 MB | ~1.4 GB | 0 | Comfortable |
 | Qwen 3.6-35B Q4 | 64K | none | ~65 MB | ~3.4 GB | 0 | Marginal |
 | Qwen 3.6-35B Q4 | 64K | q8_0 | ~2.3 GB | ~1.6 GB | 0 | Comfortable |
+| Qwen 3.6-35B Q4 | 32K | q8_0 | ~3.4 GB | ~430 MB | 0 | Comfortable |
 
-KV cache quantization (`q8_0`) halves KV cache memory with negligible quality impact — use it at 64K on 32 GB.
+Qwen uses asymmetric KV quantization (`-ctk q8_0 -ctv q4_0`) to reduce memory further. Gemma uses `-ctk q8_0 -ctv q8_0`.
+
+### Sampling parameters
+
+Both models use the same sampling settings:
+
+| Parameter | Value | Reasoning |
+|---|---|---|
+| `--temp` | 0.6 | Balanced for agentic coding use — low enough for precise code, high enough for natural reasoning. Values below 0.3 risk hobbling thinking and increasing loop likelihood. |
+| `--top-p` | 0.9 | Slightly tighter token selection than 0.95; minimal effect at temp 0.6 but consistent with coding-focused defaults. |
+| `--repeat-penalty` | 1.03 | Very mild — enough to nudge out of loops without degrading code generation. Aggressive values hurt repetitive-by-nature constructs like variable names and brackets. |
+| `--repeat-last-n` | 128 | Moderate lookback window — catches short phrase repetition and reasoning loops. 64 was too short to catch multi-sentence loops; 256+ risks degrading code with naturally repetitive constructs. |
+| `--threads` | 8 | Matches M2 Max performance core count. |
+
+### Per-model differences
+
+| | Gemma 4 26B | Qwen 3.6-35B |
+|---|---|---|
+| `-ctv` | q8_0 | q4_0 (extra memory saving) |
+| Model size | ~15 GB | ~20 GB |
 
 ---
 
