@@ -43,6 +43,7 @@ Both models use the same sampling settings:
 | `--top-p` | 0.9 | Slightly tighter token selection than 0.95; minimal effect at temp 0.6 but consistent with coding-focused defaults. |
 | `--repeat-penalty` | 1.03 | Very mild — enough to nudge out of loops without degrading code generation. Aggressive values hurt repetitive-by-nature constructs like variable names and brackets. |
 | `--repeat-last-n` | 128 | Moderate lookback window — catches short phrase repetition and reasoning loops. 64 was too short to catch multi-sentence loops; 256+ risks degrading code with naturally repetitive constructs. |
+| `--flash-attn` | — | Optimised attention computation — lower peak memory during inference, required for quantised V cache. Well supported on Apple Silicon via Metal. |
 | `--threads` | 8 | Matches M2 Max performance core count. |
 
 ### Per-model differences
