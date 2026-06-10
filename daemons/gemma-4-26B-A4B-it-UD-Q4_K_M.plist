@@ -21,6 +21,7 @@
       <string>--ctx-size</string>
       <string>32768</string>
       <string>--flash-attn</string>
+      <string>on</string>
       <string>--cache-type-k</string>
       <string>q8_0</string>
       <string>--cache-type-v</string>
