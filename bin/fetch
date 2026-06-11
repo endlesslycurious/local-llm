@@ -1,0 +1,29 @@
+#!/bin/sh
+# Download a model from Hugging Face into /Users/bender/models.
+# Usage: sudo bin/fetch <repo> <filename>
+# e.g.   sudo bin/fetch unsloth/Qwen3.6-27B-GGUF Qwen3.6-27B-UD-Q4_K_XL.gguf
+
+MODELS_DIR=/Users/bender/models
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: $0 <repo> <filename>"
+    echo ""
+    echo "Example:"
+    echo "  $0 unsloth/Qwen3.6-27B-GGUF Qwen3.6-27B-UD-Q4_K_XL.gguf"
+    exit 1
+fi
+
+REPO="$1"
+FILE="$2"
+DEST="$MODELS_DIR/$FILE"
+
+echo "Downloading $FILE from $REPO..."
+hf download "$REPO" "$FILE" --local-dir "$MODELS_DIR"
+
+echo "Setting ownership..."
+chown bender:staff "$DEST"
+
+echo "Setting permissions..."
+chmod 555 "$DEST"
+
+echo "Done: $DEST"

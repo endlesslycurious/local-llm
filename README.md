@@ -2,8 +2,6 @@
 
 Personal setup and model log for running LLMs locally on Apple Silicon.
 
-> **Reference guide:** [Best Local LLMs for Mac in 2026](https://insiderllm.com/guides/best-local-llms-mac-2026/) — model picks by memory tier, real performance numbers, hardware buying advice.
-
 ## Requirements
 
 | | |
@@ -27,6 +25,7 @@ Personal setup and model log for running LLMs locally on Apple Silicon.
 | File | Description |
 |------|-------------|
 | [`Setup.md`](Setup.md) | llama.cpp appliance setup with a dedicated `bender` service account |
+| [`Tuning.md`](Tuning.md) | Performance flags, wired memory limit, KV cache quantisation, sampling parameters |
 | [`Models.md`](Models.md) | Personal log of models tested — quant, speed, source URL, notes |
 | [`daemons/`](daemons/) | Per-model LaunchDaemon plists — copy and rename to deploy a model |
 
@@ -38,7 +37,7 @@ curl -fsSL https://ollama.com/install.sh | sh
 ollama run qwen3.6:35b-a3b-q4_K_M
 
 # MLX-LM — fastest on Apple Silicon
-pip install mlx-lm
+uv tool install mlx-lm
 mlx_lm.generate --model mlx-community/Qwen3.6-35B-A3B-4bit --prompt "Hello"
 ```
 
@@ -50,7 +49,7 @@ For the full appliance setup (launchd service, service account, llama.cpp), see 
 |-----|-------------------|-------|
 | 8 GB | Gemma 4 E2B or Qwen 3.5 4B | ~5 GB available; platform is outgrowing this tier |
 | 16 GB | Qwen 3.5 9B Q4 (~6.6 GB) | Best all-rounder; `/think` mode for chain-of-thought |
-| 24 GB | Qwen 3.6-27B Q4_K_M (tight) or Qwen 3 14B (safe) | 16.8 GB model leaves ~5 GB for OS + context |
+| 24 GB | Qwen 3.6-27B Q4_K_XL (tight) or Qwen 3 14B (safe) | 17.6 GB model leaves ~5 GB for OS + context |
 | **32–48 GB** | **Qwen 3.6-35B-A3B Q4** (~20 GB) | **2026 default — this machine's tier** — MoE, only 3B active params per token |
 | 48–64 GB | Qwen 3.6-35B-A3B Q8 + Qwen 3.6-27B Q6/Q8 | Higher quant; best local coding setup |
 | 96–128 GB | DeepSeek V4-Flash Q4 (~140 GB, aspirational) | No independent Mac benchmarks yet as of Apr 2026 |
@@ -78,3 +77,11 @@ memory_pressure
 ```
 
 A healthy idle state (model loaded, no active prompt) shows ~25% free, compressor under 500 MB, and zero swap.
+
+## Reference Links
+
+| Article | What it covers |
+|---------|----------------|
+| [Best Local LLMs for Mac in 2026](https://insiderllm.com/guides/best-local-llms-mac-2026/) | Model picks by memory tier, real performance numbers, hardware buying advice |
+| [Qwen 3.6 Complete Guide](https://insiderllm.com/guides/qwen-3-6-local-ai-guide/) | 27B dense vs 35B-A3B MoE trade-offs, VRAM fit, backend compatibility, sampling params |
+| [Tuning llama.cpp on Apple Silicon](https://medium.com/@michael.hannecke/tuning-llama-cpp-on-apple-silicon-843f37a6c3dc) | The seven flags that matter on M-series, wired memory limit, what to ignore from x86 guides |

@@ -1,8 +1,8 @@
-# Mac Studio LLM Appliance Setup (Gemma + llama.cpp)
+# Mac Studio LLM Appliance Setup (llama.cpp)
 
 > **Hardware:** Mac Studio M2 Max, 32 GB unified memory. See [Models.md](Models.md) for what has been tested, or the [insiderllm guide](https://insiderllm.com/guides/best-local-llms-mac-2026/) for current recommendations.
 
-This guide sets up a dedicated Mac Studio as a local coding assistant using Gemma models via llama.cpp, running under a separate service account (`bender`).
+This guide sets up a dedicated Mac Studio as a local coding assistant using local models via llama.cpp, running under a separate service account (`bender`).
 
 ---
 
@@ -58,48 +58,29 @@ Final layout:
 
 ## 4. Add Model
 
-From your main account:
-
-1. Download a GGUF model (see [Models.md](Models.md) for tested options)
-2. Copy to the service account:
+From your main account, download the model using `bin/fetch`:
 
 ```bash
-sudo cp <model>.gguf /Users/bender/models/
-sudo chown -R bender:staff /Users/bender/models
+sudo bin/fetch unsloth/Qwen3.6-27B-GGUF Qwen3.6-27B-UD-Q4_K_XL.gguf
 ```
 
-Optional hardening (prevents `bender` from modifying model files):
+This downloads the file to `/Users/bender/models/`, sets ownership to `bender:staff`, and locks permissions to read-only.
 
-```bash
-sudo chmod -R 555 /Users/bender/models
-```
+> **Note:** `llama-cli --hf-repo` also downloads from Hugging Face but always writes to the HF cache (`~/.cache/huggingface/hub/`) regardless of any path flag — it cannot download directly to a target directory. Use `bin/fetch` when the destination matters.
 
 ---
 
-## 5. Configure Context Window (Mac Studio M2 Max, 32 GB)
+## 5. System Tuning
 
-For a 32 GB Mac Studio M2 Max running Gemma 4 26B Q4, 64K context has been tested and works:
+Two one-time settings before running the server. Full details and LaunchDaemons for persistence in [Tuning.md](Tuning.md).
 
-```text
-Context Window: 65536
-Batch Size: 512
-GPU Layers: all (-1)
-```
-
-Recommended starting point:
+**Wired memory limit** — raise the GPU memory allocation ceiling to 70% of unified memory, or large model allocations may be silently rejected and fall back to CPU:
 
 ```bash
---ctx-size 65536
---batch-size 512
---ubatch-size 512
---n-gpu-layers -1
+sudo sysctl iogpu.wired_limit_mb=22938
 ```
 
-Notes:
-- 65536 (64K) has been tested on this hardware with Gemma 4 26B Q4 and runs without memory pressure
-- macOS idle uses ~13 GB; Gemma 4 26B Q4 uses ~15 GB; 64K fits in the remaining headroom
-- 64K is near the practical ceiling on 32 GB — do not go higher
-- `--threads` controls CPU threads for non-GPU work; with all layers on GPU this rarely bottlenecks, but 8–10 is a reasonable value on M2 Max (12 performance cores)
+**Flags and context** — per-model flags are pre-configured in each plist in [`daemons/`](daemons/). See [Tuning.md](Tuning.md) for the rationale behind each flag and the recommended context window per model.
 
 ---
 
@@ -137,7 +118,7 @@ Paste:
     <array>
       <string>/opt/homebrew/bin/llama-server</string>
       <string>-m</string>
-      <string>/Users/bender/models/gemma-4-26B-A4B-it-UD-Q4_K_M.gguf</string>
+      <string>/Users/bender/models/<model>.gguf</string>
       <string>--host</string>
       <string>0.0.0.0</string>
       <string>--port</string>
@@ -317,13 +298,12 @@ sudo launchctl kickstart -k system/local.llama.server
 
 Each model in [`daemons/`](daemons/) has its own plist pre-configured with the right model path and context settings.
 
-**1. Copy the new model file onto the Mac Studio:**
+**1. Download the model file to the Mac Studio:**
 
-Typically I download the file from [Hugging Face](https://huggingface.co/) or similar online repository:
+Use `bin/fetch` — same as section 4:
 
 ```bash
-sudo cp <model>.gguf /Users/bender/models/
-sudo chown bender:staff /Users/bender/models/<model>.gguf
+sudo bin/fetch <repo> <filename>
 ```
 
 **2. Deploy its plist:**
