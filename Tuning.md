@@ -76,7 +76,7 @@ Seven flags do meaningful work on Apple Silicon. Common x86 flags (`--numa`, `--
 
 `--mlock` is safe on this machine because 16–20 GB model weights + KV cache at 32K sits comfortably under the 70% wired memory ceiling (~22 GB) on a dedicated 32 GB host. At 64K context the KV cache grows to ~5.7 GB, pushing total wired past 23 GB — avoid 64K on any model with `--mlock` on this hardware.
 
-> **Note:** The Gemma and Qwen 3.6-35B-A3B plists currently use `-b 512 -ub 512`. Updating both to `2048` would improve prefill speed and is worth doing on the next model swap.
+> **Note:** The Gemma plist currently uses `-b 512 -ub 512`. Updating to `2048` would improve prefill speed and is worth doing on the next model swap.
 
 ---
 
@@ -108,17 +108,20 @@ Quantising the KV cache halves its memory footprint with negligible quality loss
 | Gemma 4 26B Q4 | 64K | q8_0 | ~875 MB | ~1.4 GB | 0 | Comfortable |
 | Qwen 3.6-35B Q4 | 64K | none | ~65 MB | ~3.4 GB | 0 | Marginal |
 | Qwen 3.6-35B Q4 | 64K | q8_0 | ~2.3 GB | ~1.6 GB | 0 | Comfortable |
-| Qwen 3.6-35B Q4 | 32K | q8_0 | ~3.4 GB | ~430 MB | 0 | Comfortable |
-| Qwen 3.6-27B Q4_K_XL | 32K | q8_0/q4_0 | ~5.4 GB (est.) | — | 0 | Comfortable |
+| Qwen 3.6-35B Q4 | 24K | q8_0/q8_0 | ~3.4 GB (est.) | — | 0 | Comfortable |
+| Qwen 3.6-27B Q4_K_XL | 32K | q4_0/q4_0 | ~6 GB (est.) | — | 0 | Comfortable |
 
-**`-ctv` choice:**
+**`-ctk` / `-ctv` on Apple Silicon:**
 
-| Setting | Use when |
-|---------|----------|
-| `-ctv q8_0` | Headroom is comfortable — default for Gemma 4 26B |
-| `-ctv q4_0` | Model is large enough to need extra KV headroom — Qwen 3.6-35B and Qwen 3.6-27B at 32K |
+Only **symmetric** KV cache quantisation types work on Metal. Mixed types (`q8_0/q4_0`) fail because the Metal Flash Attention kernel has no implementation for mismatched K/V types — it falls back to CPU and inference becomes GPU-bound in reverse.
 
-Value cache (`-ctv`) is more sensitive to quantisation than key cache (`-ctk`). Drop to `q4_0` only when needed.
+| Combination | Metal FA | Notes |
+|-------------|----------|-------|
+| `q8_0/q8_0` | ✅ | Best quality; default where memory allows |
+| `q4_0/q4_0` | ✅ | Valid memory-saving option; ~half the KV footprint of q8_0 |
+| `q8_0/q4_0` | ❌ | Broken on Metal — CPU fallback, do not use |
+
+See [llama.cpp #21450](https://github.com/ggml-org/llama.cpp/issues/21450) for the upstream issue.
 
 ---
 
@@ -139,7 +142,7 @@ All current models use the same sampling settings:
 
 | | Gemma 4 26B | Qwen 3.6-35B-A3B | Qwen 3.6-27B |
 |---|---|---|---|
-| `-ctv` | `q8_0` | `q4_0` (extra memory saving) | `q4_0` (17.6 GB model leaves KV headroom tight at 32K) |
-| `-b` / `-ub` | `512` | `512` | `2048` |
+| `-ctk`/`-ctv` | `q8_0/q8_0` | `q8_0/q8_0` | `q4_0/q4_0` |
+| `-b` / `-ub` | `512` | `2048` | `2048` |
 | Model size | ~15 GB | ~20 GB | ~17.6 GB |
-| ctx target | 64K | 32K | 32K |
+| ctx target | 64K | 24K | 32K |
