@@ -109,14 +109,14 @@ Quantising the KV cache halves its memory footprint with negligible quality loss
 | Qwen 3.6-35B Q4 | 64K | none | ~65 MB | ~3.4 GB | 0 | Marginal |
 | Qwen 3.6-35B Q4 | 64K | q8_0 | ~2.3 GB | ~1.6 GB | 0 | Comfortable |
 | Qwen 3.6-35B Q4 | 32K | q8_0 | ~3.4 GB | ~430 MB | 0 | Comfortable |
-| Qwen 3.6-27B Q4_K_XL | 32K | q8_0/q8_0 | ~4.7 GB (est.) | — | 0 | Comfortable |
+| Qwen 3.6-27B Q4_K_XL | 32K | q8_0/q4_0 | ~5.4 GB (est.) | — | 0 | Comfortable |
 
 **`-ctv` choice:**
 
 | Setting | Use when |
 |---------|----------|
-| `-ctv q8_0` | Headroom is comfortable — default for Gemma 4 26B and Qwen 3.6-27B |
-| `-ctv q4_0` | Model is large enough to need extra KV headroom — e.g. Qwen 3.6-35B at 32K |
+| `-ctv q8_0` | Headroom is comfortable — default for Gemma 4 26B |
+| `-ctv q4_0` | Model is large enough to need extra KV headroom — Qwen 3.6-35B and Qwen 3.6-27B at 32K |
 
 Value cache (`-ctv`) is more sensitive to quantisation than key cache (`-ctk`). Drop to `q4_0` only when needed.
 
@@ -139,7 +139,7 @@ All current models use the same sampling settings:
 
 | | Gemma 4 26B | Qwen 3.6-35B-A3B | Qwen 3.6-27B |
 |---|---|---|---|
-| `-ctv` | `q8_0` | `q4_0` (extra memory saving) | `q8_0` (headroom allows symmetric quant) |
+| `-ctv` | `q8_0` | `q4_0` (extra memory saving) | `q4_0` (17.6 GB model leaves KV headroom tight at 32K) |
 | `-b` / `-ub` | `512` | `512` | `2048` |
 | Model size | ~15 GB | ~20 GB | ~17.6 GB |
 | ctx target | 64K | 32K | 32K |
