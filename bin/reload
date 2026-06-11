@@ -5,7 +5,9 @@
 
 PLIST=/Library/LaunchDaemons/local.llama.server.plist
 
-launchctl bootout system/local.llama.server 2>/dev/null || true
+if launchctl bootout system/local.llama.server 2>/dev/null; then
+    sleep 2
+fi
 launchctl bootstrap system "$PLIST"
 
 echo "llama-server reloaded"

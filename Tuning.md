@@ -74,7 +74,7 @@ Seven flags do meaningful work on Apple Silicon. Common x86 flags (`--numa`, `--
 | `--prio` | `2` | Reduces scheduler interruption on a dedicated inference host |
 | `--threads` | `8` | Matches M2 Max performance core count |
 
-`--mlock` is safe on this machine because 16–20 GB model weights + KV cache sits comfortably under the 70% wired memory ceiling (~22 GB) on a dedicated 32 GB host.
+`--mlock` is safe on this machine because 16–20 GB model weights + KV cache at 32K sits comfortably under the 70% wired memory ceiling (~22 GB) on a dedicated 32 GB host. At 64K context the KV cache grows to ~5.7 GB, pushing total wired past 23 GB — avoid 64K on any model with `--mlock` on this hardware.
 
 > **Note:** The Gemma and Qwen 3.6-35B-A3B plists currently use `-b 512 -ub 512`. Updating both to `2048` would improve prefill speed and is worth doing on the next model swap.
 
@@ -87,7 +87,7 @@ The KV cache grows linearly with context length. On 32 GB with models in the 15�
 | Model | Recommended ctx | Reason |
 |-------|-----------------|--------|
 | Gemma 4 26B Q4 (~15 GB) | 64K | Comfortable headroom |
-| Qwen 3.6-27B Q4_K_XL (~17.6 GB) | 64K | ~4.7 GB free with q8_0/q8_0 KV quant |
+| Qwen 3.6-27B Q4_K_XL (~17.6 GB) | 32K | Same ctx as 35B-A3B — --mlock wires KV cache; 64K pushes total wired past 23 GB |
 | Qwen 3.6-35B-A3B Q4 (~20 GB) | 32K | 64K leaves only ~2.3 GB free |
 
 64K is the practical ceiling on 32 GB for models in this weight range — do not go higher.
@@ -109,7 +109,7 @@ Quantising the KV cache halves its memory footprint with negligible quality loss
 | Qwen 3.6-35B Q4 | 64K | none | ~65 MB | ~3.4 GB | 0 | Marginal |
 | Qwen 3.6-35B Q4 | 64K | q8_0 | ~2.3 GB | ~1.6 GB | 0 | Comfortable |
 | Qwen 3.6-35B Q4 | 32K | q8_0 | ~3.4 GB | ~430 MB | 0 | Comfortable |
-| Qwen 3.6-27B Q4_K_XL | 64K | q8_0/q8_0 | ~4.7 GB (est.) | — | 0 | Comfortable |
+| Qwen 3.6-27B Q4_K_XL | 32K | q8_0/q8_0 | ~4.7 GB (est.) | — | 0 | Comfortable |
 
 **`-ctv` choice:**
 
@@ -142,4 +142,4 @@ All current models use the same sampling settings:
 | `-ctv` | `q8_0` | `q4_0` (extra memory saving) | `q8_0` (headroom allows symmetric quant) |
 | `-b` / `-ub` | `512` | `512` | `2048` |
 | Model size | ~15 GB | ~20 GB | ~17.6 GB |
-| ctx target | 64K | 32K | 64K |
+| ctx target | 64K | 32K | 32K |
