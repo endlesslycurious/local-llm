@@ -19,7 +19,7 @@
       <string>--port</string>
       <string>8080</string>
       <string>--ctx-size</string>
-      <string>32768</string>
+      <string>65536</string>
       <string>--flash-attn</string>
       <string>on</string>
       <string>--cache-type-k</string>
