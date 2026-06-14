@@ -46,7 +46,10 @@ brew install python@3.13 rust
 
 Then install mlx-openai-server via `uv`:
 
+`uv tool install` is user-scoped. Install it as the same user that will run the LaunchDaemon (`bender` in this setup).
+
 ```bash
+sudo -u bender -H bash
 uv tool install mlx-openai-server --python 3.13
 ```
 
