@@ -1,8 +1,8 @@
 #!/bin/sh
 # Download a Hugging Face MLX model repo into /Users/bender/models/<repo>.
 # Usage: sudo bin/fetch-mlx <repo> [revision]
-# e.g.   sudo bin/fetch-mlx unsloth/Qwen3.6-27B-UD-MLX-4bit
-# e.g.   sudo bin/fetch-mlx unsloth/Qwen3.6-27B-UD-MLX-4bit main
+# e.g.   sudo bin/fetch-mlx mlx-community/Qwen3.6-27B-4bit
+# e.g.   sudo bin/fetch-mlx mlx-community/Qwen3.6-27B-4bit main
 
 set -e
 
@@ -14,8 +14,8 @@ if [ -z "$REPO_ID" ]; then
     echo "Usage: $0 <repo> [revision]"
     echo ""
     echo "Examples:"
-    echo "  $0 unsloth/Qwen3.6-27B-UD-MLX-4bit"
-    echo "  $0 unsloth/Qwen3.6-27B-UD-MLX-4bit main"
+    echo "  $0 mlx-community/Qwen3.6-27B-4bit"
+    echo "  $0 mlx-community/Qwen3.6-27B-4bit main"
     exit 1
 fi
 

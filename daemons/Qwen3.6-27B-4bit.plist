@@ -16,9 +16,9 @@
       <string>--model-type</string>
       <string>lm</string>
       <string>--model-path</string>
-      <string>/Users/bender/models/unsloth/Qwen3.6-27B-UD-MLX-4bit</string>
+      <string>/Users/bender/models/mlx-community/Qwen3.6-27B-4bit</string>
       <string>--served-model-name</string>
-      <string>Qwen3.6-27B-UD-MLX-4bit</string>
+      <string>Qwen3.6-27B-4bit</string>
       <string>--host</string>
       <string>0.0.0.0</string>
       <string>--port</string>

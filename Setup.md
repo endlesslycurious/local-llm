@@ -86,13 +86,13 @@ From your main account, download a single GGUF file with `bin/fetch`, or an MLX 
 
 ```bash
 sudo bin/fetch unsloth/Qwen3.6-27B-GGUF Qwen3.6-27B-UD-Q4_K_XL.gguf
-sudo bin/fetch-mlx unsloth/Qwen3.6-27B-UD-MLX-4bit
+sudo bin/fetch-mlx mlx-community/Qwen3.6-27B-4bit
 ```
 
 If you need a non-default branch or tag:
 
 ```bash
-sudo bin/fetch-mlx unsloth/Qwen3.6-27B-UD-MLX-4bit main
+sudo bin/fetch-mlx mlx-community/Qwen3.6-27B-4bit main
 ```
 
 This downloads the file into `/Users/bender/models/`, or the MLX repo into `/Users/bender/models/<repo>/`, then sets ownership to `bender:staff` and locks permissions to read-only.
