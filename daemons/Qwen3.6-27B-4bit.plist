@@ -11,7 +11,7 @@
 
     <key>ProgramArguments</key>
     <array>
-      <string>/Users/daniel/.local/bin/mlx-openai-server</string>
+      <string>/Users/bender/.local/bin/mlx-openai-server</string>
       <string>launch</string>
       <string>--model-type</string>
       <string>lm</string>
