@@ -13,6 +13,7 @@ Add a row each time you pull and test a new model. Link directly to the HuggingF
 | [Gemma 4 26B-A4B](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | Q4_K_M (UD) | ~15 GB | [unsloth/gemma-4-26B-A4B-it-GGUF](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | llama.cpp | — | Initial appliance model; 4B active params, 256K context | 2026-05 |
 | [Qwen 3.6-35B-A3B](https://ollama.com/library/qwen3.6) | Q4_K_M (UD) | ~20 GB | [unsloth GGUF](https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF) / [ollama](https://ollama.com/library/qwen3.6) | llama.cpp | — | 2026 default MoE — 3B active params, 262K context | 2026-05 |
 | [Qwen 3.6-27B](https://huggingface.co/unsloth/Qwen3.6-27B-GGUF) | Q4_K_XL (UD) | ~17.6 GB | [unsloth/Qwen3.6-27B-GGUF](https://huggingface.co/unsloth/Qwen3.6-27B-GGUF) | llama.cpp | — | Best local coding model; SWE-bench 77.2; more headroom than 35B-A3B; ~25 tok/s (Simon Willison measured 25.57 on non-UD Q4_K_M — UD-Q4_K_XL will be marginally slower at 17.6 GB) | 2026-06 |
+| [Qwen 3.6-27B (MLX)](https://huggingface.co/unsloth/Qwen3.6-27B-UD-MLX-4bit) | 4bit | — | [unsloth/Qwen3.6-27B-UD-MLX-4bit](https://huggingface.co/unsloth/Qwen3.6-27B-UD-MLX-4bit) | mlx-openai-server | — | MLX variant for the appliance-style OpenAI-compatible server | 2026-06 |
 
 ---
 

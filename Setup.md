@@ -22,6 +22,7 @@ Notes:
 
 ## 2. Install Runtime (Main Account)
 
+### llama.cpp
 Install llama.cpp via Homebrew:
 
 ```bash
@@ -33,6 +34,29 @@ Verify install:
 ```bash
 which llama-server
 # /opt/homebrew/bin/llama-server
+```
+
+### mlx-openai-server
+
+Curently a dependency of mlx-openai-server requires `Python 3.13` (see issue) and brew is installing `Python 3.14` by default. `Rust` is also required.
+
+```bash
+brew install python@3.13 rust
+```
+
+Then install mlx-openai-server via `uv`:
+
+```bash
+uv tool install mlx-epenai-server --python 3.13
+```
+
+Verify install:
+```bash
+mlx-openai-server --version
+
+✨ mlx-openai-server - OpenAI Compatible API Server for MLX models ✨
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚀 Version: 1.8.1
 ```
 
 ---
@@ -58,15 +82,22 @@ Final layout:
 
 ## 4. Add Model
 
-From your main account, download the model using `bin/fetch`:
+From your main account, download a single GGUF file with `bin/fetch`, or an MLX model repo with `bin/fetch-mlx`:
 
 ```bash
 sudo bin/fetch unsloth/Qwen3.6-27B-GGUF Qwen3.6-27B-UD-Q4_K_XL.gguf
+sudo bin/fetch-mlx unsloth/Qwen3.6-27B-UD-MLX-4bit
 ```
 
-This downloads the file to `/Users/bender/models/`, sets ownership to `bender:staff`, and locks permissions to read-only.
+If you need a non-default branch or tag:
 
-> **Note:** `llama-cli --hf-repo` also downloads from Hugging Face but always writes to the HF cache (`~/.cache/huggingface/hub/`) regardless of any path flag — it cannot download directly to a target directory. Use `bin/fetch` when the destination matters.
+```bash
+sudo bin/fetch-mlx unsloth/Qwen3.6-27B-UD-MLX-4bit main
+```
+
+This downloads the file into `/Users/bender/models/`, or the MLX repo into `/Users/bender/models/<repo>/`, then sets ownership to `bender:staff` and locks permissions to read-only.
+
+> **Note:** `llama-cli --hf-repo` also downloads from Hugging Face but always writes to the HF cache (`~/.cache/huggingface/hub/`) regardless of any path flag — it cannot download directly to a target directory. Use `bin/fetch` or `bin/fetch-mlx` when the destination matters.
 
 ---
 
@@ -100,7 +131,7 @@ The plist content is shown below for reference. If creating manually:
 sudo nano /Library/LaunchDaemons/local.llama.server.plist
 ```
 
-Paste:
+Paste the following for a `llama.cpp` hosted model:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -298,12 +329,13 @@ sudo launchctl kickstart -k system/local.llama.server
 
 Each model in [`daemons/`](daemons/) has its own plist pre-configured with the right model path and context settings.
 
-**1. Download the model file to the Mac Studio:**
+**1. Download the model file or MLX repo to the Mac Studio:**
 
-Use `bin/fetch` — same as section 4:
+Use `bin/fetch` for a single GGUF file, or `bin/fetch-mlx` for a Hugging Face MLX repo tree:
 
 ```bash
 sudo bin/fetch <repo> <filename>
+sudo bin/fetch-mlx <repo> [revision]
 ```
 
 **2. Deploy its plist:**

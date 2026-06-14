@@ -1,0 +1,37 @@
+#!/bin/sh
+# Download a Hugging Face MLX model repo into /Users/bender/models/<repo>.
+# Usage: sudo bin/fetch-mlx <repo> [revision]
+# e.g.   sudo bin/fetch-mlx unsloth/Qwen3.6-27B-UD-MLX-4bit
+# e.g.   sudo bin/fetch-mlx unsloth/Qwen3.6-27B-UD-MLX-4bit main
+
+set -e
+
+MODELS_DIR=/Users/bender/models
+REPO_ID="$1"
+REVISION="$2"
+
+if [ -z "$REPO_ID" ]; then
+    echo "Usage: $0 <repo> [revision]"
+    echo ""
+    echo "Examples:"
+    echo "  $0 unsloth/Qwen3.6-27B-UD-MLX-4bit"
+    echo "  $0 unsloth/Qwen3.6-27B-UD-MLX-4bit main"
+    exit 1
+fi
+
+if [ -z "$REVISION" ]; then
+    REVISION=main
+fi
+
+DEST="$MODELS_DIR/$REPO_ID"
+
+echo "Downloading $REPO_ID@$REVISION..."
+hf download "$REPO_ID" --repo-type model --revision "$REVISION" --local-dir "$DEST"
+
+echo "Setting ownership..."
+chown -R bender:staff "$DEST"
+
+echo "Setting permissions..."
+chmod -R 555 "$DEST"
+
+echo "Done: $DEST"

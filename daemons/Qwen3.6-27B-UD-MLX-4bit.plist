@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+ "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>local.llama.server</string>
+
+    <key>UserName</key>
+    <string>bender</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>/Users/bender/.local/bin/mlx-openai-server</string>
+      <string>launch</string>
+      <string>--model-type</string>
+      <string>lm</string>
+      <string>--model-path</string>
+      <string>/Users/bender/models/unsloth/Qwen3.6-27B-UD-MLX-4bit</string>
+      <string>--served-model-name</string>
+      <string>Qwen3.6-27B-UD-MLX-4bit</string>
+      <string>--host</string>
+      <string>0.0.0.0</string>
+      <string>--port</string>
+      <string>8080</string>
+      <string>--context-length</string>
+      <string>65536</string>
+      <string>--temperature</string>
+      <string>0.6</string>
+      <string>--top-p</string>
+      <string>0.9</string>
+      <string>--repetition-penalty</string>
+      <string>1.03</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/bender/logs/llm.out</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/bender/logs/llm.err</string>
+  </dict>
+</plist>
