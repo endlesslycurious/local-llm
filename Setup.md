@@ -47,7 +47,7 @@ brew install python@3.13 rust
 Then install mlx-openai-server via `uv`:
 
 ```bash
-uv tool install mlx-epenai-server --python 3.13
+uv tool install mlx-openai-server --python 3.13
 ```
 
 Verify install:
@@ -58,6 +58,8 @@ mlx-openai-server --version
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🚀 Version: 1.8.1
 ```
+
+For Qwen 3.6 tool use, launch `mlx-openai-server` with `--reasoning-parser qwen3 --tool-call-parser qwen3_coder --enable-auto-tool-choice` so the server returns structured `tool_calls` instead of raw `<tool_call>` text.
 
 ---
 
@@ -304,6 +306,8 @@ In Zed's `settings.json`, under `language_models`:
   }
 }
 ```
+
+For Qwen 3.6 tool use, `mlx-openai-server` must be launched with `--reasoning-parser qwen3 --tool-call-parser qwen3_coder --enable-auto-tool-choice`; otherwise the model may emit raw `<tool_call>` text and Zed will not execute tools.
 
 The model name must match the `id` returned by `GET /v1/models`. To enable vision, a separate mmproj file is required — see llama.cpp docs for `--mmproj`.
 

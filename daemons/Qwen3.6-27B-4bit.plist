@@ -31,6 +31,11 @@
       <string>0.9</string>
       <string>--repetition-penalty</string>
       <string>1.03</string>
+      <string>--reasoning-parser</string>
+      <string>qwen3</string>
+      <string>--tool-call-parser</string>
+      <string>qwen3_coder</string>
+      <string>--enable-auto-tool-choice</string>
     </array>
 
     <key>RunAtLoad</key>
