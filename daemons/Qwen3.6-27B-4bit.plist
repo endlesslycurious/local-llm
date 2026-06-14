@@ -37,6 +37,12 @@
       <string>qwen3_coder</string>
       <string>--enable-auto-tool-choice</string>
       <string>--no-log-file</string>
+      <string>--kv-bits</string>
+      <string>4</string>
+      <string>--kv-group-size</string>
+      <string>64</string>
+      <string>--quantized-kv-start</string>
+      <string>0</string>
     </array>
 
     <key>RunAtLoad</key>
