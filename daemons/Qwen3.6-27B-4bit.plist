@@ -30,7 +30,7 @@
       <string>--top-p</string>
       <string>0.9</string>
       <string>--repetition-penalty</string>
-      <string>1.03</string>
+      <string>1.06</string>
       <string>--reasoning-parser</string>
       <string>qwen3</string>
       <string>--tool-call-parser</string>
