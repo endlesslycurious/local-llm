@@ -36,6 +36,7 @@
       <string>--tool-call-parser</string>
       <string>qwen3_coder</string>
       <string>--enable-auto-tool-choice</string>
+      <string>--no-log-file</string>
     </array>
 
     <key>RunAtLoad</key>
