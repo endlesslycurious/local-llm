@@ -24,7 +24,7 @@
       <string>--port</string>
       <string>8080</string>
       <string>--context-length</string>
-      <string>65536</string>
+      <string>32768</string>
       <string>--temperature</string>
       <string>0.6</string>
       <string>--top-p</string>
