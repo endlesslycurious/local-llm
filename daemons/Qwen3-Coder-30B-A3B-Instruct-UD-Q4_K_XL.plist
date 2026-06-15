@@ -48,6 +48,8 @@
       <string>1.05</string>
       <string>--repeat-last-n</string>
       <string>128</string>
+      <string>--reasoning-format</string>
+      <string>deepseek</string>
     </array>
 
     <key>RunAtLoad</key>
