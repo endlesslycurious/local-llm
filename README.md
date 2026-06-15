@@ -50,7 +50,7 @@ For the full appliance setup (launchd service, service account, llama.cpp), see 
 | 8 GB | Gemma 4 E2B or Qwen 3.5 4B | ~5 GB available; platform is outgrowing this tier |
 | 16 GB | Qwen 3.5 9B Q4 (~6.6 GB) | Best all-rounder; `/think` mode for chain-of-thought |
 | 24 GB | Qwen 3.6-27B Q4_K_XL (tight) or Qwen 3 14B (safe) | 17.6 GB model leaves ~5 GB for OS + context |
-| **32–48 GB** | **Qwen 3.6-35B-A3B Q4** (~20 GB) or **Qwen3-Coder-30B-A3B UD-Q4_K_XL** | **2026 default — this machine's tier** — MoE, only 3B active params per token; coder variant is the higher-quality code-focused pick |
+| **32–48 GB** | **Qwen 3.6-35B-A3B Q4** (~20 GB) or **Qwen3-Coder-30B-A3B-Instruct UD-Q4_K_XL** | **2026 default — this machine's tier** — MoE, only 3B active params per token; coder variant is the higher-quality code-focused pick |
 | 48–64 GB | Qwen 3.6-35B-A3B Q8 + Qwen 3.6-27B Q6/Q8 | Higher quant; best local coding setup |
 | 96–128 GB | DeepSeek V4-Flash Q4 (~140 GB, aspirational) | No independent Mac benchmarks yet as of Apr 2026 |
 | 192 GB+ | DeepSeek V4-Flash Q4–Q6 | Research-grade; 1M context window |

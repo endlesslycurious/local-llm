@@ -32,4 +32,4 @@ Models from the insiderllm guide worth pulling next, suited to the 32–48 GB ti
 | Model | Quant | File size | Source | Why |
 |-------|-------|-----------|--------|-----|
 | Gemma 4 26B-A4B | Q8 | ~28 GB | [unsloth GGUF](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | Higher-quality quant of the current appliance model |
-| Qwen 3 Coder 30B-A3B | UD-Q4_K_XL | ~17.7 GB | [unsloth GGUF](https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF) | Coding-specialized upgrade with a similar footprint to the current 27B class |
+| Qwen3-Coder-30B-A3B-Instruct | UD-Q4_K_XL | ~17.7 GB | [unsloth GGUF](https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF) | Coding-specialized upgrade with a similar footprint to the current 27B class; daemon uses Qwen's coder sampling defaults |

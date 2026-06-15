@@ -143,7 +143,7 @@ Together, these make the server much less likely to hit Metal OOMs on larger MLX
 
 ## Sampling Parameters
 
-All current models use the same sampling settings:
+Most current llama.cpp profiles use the same sampling settings. The `Qwen3-Coder-30B-A3B-Instruct` daemon uses Qwen's recommended coder defaults instead (`--temp 0.7 --top-p 0.8 --top-k 20 --repeat-penalty 1.05`).
 
 | Parameter | Value | Reasoning |
 |-----------|-------|-----------|
