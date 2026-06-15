@@ -91,6 +91,7 @@ From your main account, download a single GGUF file with `bin/fetch`, or an MLX 
 
 ```bash
 sudo bin/fetch unsloth/Qwen3.6-27B-GGUF Qwen3.6-27B-UD-Q4_K_XL.gguf
+sudo bin/fetch unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf
 sudo bin/fetch-mlx mlx-community/Qwen3.6-27B-4bit
 ```
 
