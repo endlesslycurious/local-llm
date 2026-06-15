@@ -4,6 +4,10 @@
 # Use after deploying a new plist or to recover from memory pressure.
 
 PLIST=/Library/LaunchDaemons/local.llama.server.plist
+LOGS_DIR=/Users/bender/logs
+
+# Clear log files before reloading
+rm -f "$LOGS_DIR"/*.log 2>/dev/null
 
 if launchctl bootout system/local.llama.server 2>/dev/null; then
     sleep 2

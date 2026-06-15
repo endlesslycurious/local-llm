@@ -13,13 +13,14 @@ Add a row each time you pull and test a new model. Link directly to the HuggingF
 | [Gemma 4 26B-A4B](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | Q4_K_M (UD) | ~15 GB | [unsloth/gemma-4-26B-A4B-it-GGUF](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | llama.cpp | — | Initial appliance model; 4B active params, 256K context | 2026-05 |
 | [Qwen 3.6-35B-A3B](https://ollama.com/library/qwen3.6) | Q4_K_M (UD) | ~20 GB | [unsloth GGUF](https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF) / [ollama](https://ollama.com/library/qwen3.6) | llama.cpp | — | 2026 default MoE — 3B active params, 262K context | 2026-05 |
 | [Qwen 3.6-27B](https://huggingface.co/unsloth/Qwen3.6-27B-GGUF) | Q4_K_XL (UD) | ~17.6 GB | [unsloth/Qwen3.6-27B-GGUF](https://huggingface.co/unsloth/Qwen3.6-27B-GGUF) | llama.cpp | — | Best local coding model; SWE-bench 77.2; more headroom than 35B-A3B; ~25 tok/s (Simon Willison measured 25.57 on non-UD Q4_K_M — UD-Q4_K_XL will be marginally slower at 17.6 GB) | 2026-06 |
-| [Qwen 3.6-27B (MLX)](https://huggingface.co/mlx-community/Qwen3.6-27B-4bit) | 4bit | — | [mlx-community/Qwen3.6-27B-4bit](https://huggingface.co/mlx-community/Qwen3.6-27B-4bit) | mlx-openai-server | — | MLX variant for the appliance-style OpenAI-compatible server; use Qwen 3 parsers (`--reasoning-parser qwen3 --tool-call-parser qwen3_coder --enable-auto-tool-choice`) for structured tool calls; KV cache uses `--kv-bits 4` in the current appliance profile | 2026-06 |
+| [Qwen 3.6-27B (MLX)](https://huggingface.co/mlx-community/Qwen3.6-27B-4bit) | 4bit | — | [mlx-community/Qwen3.6-27B-4bit](https://huggingface.co/mlx-community/Qwen3.6-27B-4bit) | mlx-openai-server | — | MLX variant for the appliance-style OpenAI-compatible server; uses specific flags for structured tool calls (see Tuning.md) | 2026-06 |
+| [Qwen3-Coder-30B-A3B-Instruct](https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF) | UD-Q4_K_XL | ~17.7 GB | [unsloth GGUF](https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF) | llama.cpp | — | Coding-specialised model; requires specific flags for tool calls (see Tuning.md) | 2026-06 |
 
 ---
 
 ## Config notes
 
-See [Tuning.md](Tuning.md) for flags, KV cache quantisation, sampling parameters, and per-model settings.
+See [Tuning.md](Tuning.md) for detailed configuration information.
 
 **Baseline (llama.cpp not running):** ~91% free, ~1.5 GB wired. Activity Monitor reports ~13 GB "used" at idle, but the majority is reclaimable file cache — not real pressure.
 
@@ -32,4 +33,3 @@ Models from the insiderllm guide worth pulling next, suited to the 32–48 GB ti
 | Model | Quant | File size | Source | Why |
 |-------|-------|-----------|--------|-----|
 | Gemma 4 26B-A4B | Q8 | ~28 GB | [unsloth GGUF](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | Higher-quality quant of the current appliance model |
-| Qwen3-Coder-30B-A3B-Instruct | UD-Q4_K_XL | ~17.7 GB | [unsloth GGUF](https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF) | Coding-specialized upgrade with a similar footprint to the current 27B class; daemon uses Qwen's coder sampling defaults |

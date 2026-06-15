@@ -156,9 +156,47 @@ Most current llama.cpp profiles use the same sampling settings. The `Qwen3-Coder
 
 ## Per-Model Settings
 
-| | Gemma 4 26B | Qwen 3.6-35B-A3B | Qwen 3.6-27B |
-|---|---|---|---|
-| `-ctk`/`-ctv` | `q8_0/q8_0` | `q8_0/q8_0` | `q4_0/q4_0` |
-| `-b` / `-ub` | `512` | `2048` | `2048` |
-| Model size | ~15 GB | ~20 GB | ~17.6 GB |
-| ctx target | 64K | 24K | 48K |
+| | Gemma 4 26B | Qwen 3.6-35B-A3B | Qwen 3.6-27B | Qwen3-Coder-30B-A3B |
+|---|---|---|---|---|
+| `-ctk`/`-ctv` | `q8_0/q8_0` | `q8_0/q8_0` | `q4_0/q4_0` | `q4_0/q4_0` |
+| `-b` / `-ub` | `512` | `2048` | `2048` | `2048` |
+| Model size | ~15 GB | ~20 GB | ~17.6 GB | ~17.7 GB |
+| ctx target | 64K | 24K | 48K | 48K |
+| Tool calls | — | — | — | `--jinja --reasoning-format deepseek` |
+
+## Model-Specific Configuration
+
+### Qwen3-Coder-30B-A3B-Instruct
+
+This model requires specific flags for proper tool call functionality:
+
+- `--jinja`: Enables the GGUF's embedded tool-call template
+- `--reasoning-format deepseek`: Cleanly separates ``` blocks so they don't corrupt tool call output
+
+It also uses these sampling defaults:
+
+- `--temp 0.7`
+- `--top-p 0.8`
+- `--top-k 20`
+- `--repeat-penalty 1.05`
+
+### Qwen 3.6-27B (MLX)
+
+For the MLX variant, use these flags for structured tool calls:
+
+- `--reasoning-parser qwen3`
+- `--tool-call-parser qwen3_coder`
+- `--enable-auto-tool-choice`
+
+And KV cache settings:
+
+- `--kv-bits 4` (KV cache uses 4-bit quantization in the current appliance profile)
+
+### Qwen 3.6-35B-A3B
+
+This model has standard configuration but is optimized for coding tasks with:
+
+- `--temp 0.6`
+- `--top-p 0.9`
+- `--repeat-penalty 1.03`
+- `--repeat-last-n 128`

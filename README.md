@@ -24,10 +24,11 @@ Personal setup and model log for running LLMs locally on Apple Silicon.
 
 | File | Description |
 |------|-------------|
+| [`bin/`](bin/) | Convienance scripts for the llm host machine |
+| [`daemons/`](daemons/) | Per-model LaunchDaemon plists — copy and rename to deploy a model |
+| [`Models.md`](Models.md) | Personal log of models tested — quant, speed, source URL, notes |
 | [`Setup.md`](Setup.md) | llama.cpp appliance setup with a dedicated `bender` service account |
 | [`Tuning.md`](Tuning.md) | Performance flags, wired memory limit, KV cache quantisation, sampling parameters |
-| [`Models.md`](Models.md) | Personal log of models tested — quant, speed, source URL, notes |
-| [`daemons/`](daemons/) | Per-model LaunchDaemon plists — copy and rename to deploy a model |
 
 ## Quick start
 

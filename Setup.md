@@ -64,6 +64,8 @@ mlx-openai-server --version
 
 For Qwen 3.6 tool use, launch `mlx-openai-server` with `--reasoning-parser qwen3 --tool-call-parser qwen3_coder --enable-auto-tool-choice` so the server returns structured `tool_calls` instead of raw `<tool_call>` text.
 
+For **llama.cpp + Qwen3-Coder**, the equivalent is `--jinja --reasoning-format deepseek`. `--jinja` activates the model's embedded tool-call template; `--reasoning-format deepseek` strips `<think>` blocks out of `message.content` into `message.reasoning_content` so they don't corrupt the tool call output. Without `--reasoning-format deepseek`, the default `auto` mode can leave thinking tokens tangled with tool call tags, causing tool calls to fail silently.
+
 ---
 
 ## 3. Directory Structure
@@ -311,9 +313,14 @@ In Zed's `settings.json`, under `language_models`:
 }
 ```
 
-For Qwen 3.6 tool use, `mlx-openai-server` must be launched with `--reasoning-parser qwen3 --tool-call-parser qwen3_coder --enable-auto-tool-choice`; otherwise the model may emit raw `<tool_call>` text and Zed will not execute tools.
+For tool use, the runtime must be configured to return structured `tool_calls` rather than raw tagged text:
 
-The model name must match the `id` returned by `GET /v1/models`. To enable vision, a separate mmproj file is required — see llama.cpp docs for `--mmproj`.
+| Runtime | Required flags |
+|---------|---------------|
+| `mlx-openai-server` (Qwen 3.6) | `--reasoning-parser qwen3 --tool-call-parser qwen3_coder --enable-auto-tool-choice` |
+| `llama-server` (Qwen3-Coder) | `--jinja --reasoning-format deepseek` |
+
+The model name must match the `id` returned by `GET /v1/models`. Note that Zed requires the full filename including the `.gguf` extension to properly identify and load the model. To enable vision, a separate mmproj file is required — see llama.cpp docs for `--mmproj`.
 
 ---
 

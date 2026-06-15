@@ -27,3 +27,5 @@ chown root:wheel "$DEST"
 chmod 644 "$DEST"
 
 echo "Deployed $1 -> $DEST"
+echo "Contents of deployed file:"
+cat "$DEST"
