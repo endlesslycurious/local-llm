@@ -87,7 +87,7 @@ The KV cache grows linearly with context length. On 32 GB with models in the 15�
 | Model | Recommended ctx | Reason |
 |-------|-----------------|--------|
 | Gemma 4 26B Q4 (~15 GB) | 64K | Comfortable headroom |
-| Qwen 3.6-27B Q4_K_XL (~17.6 GB) | 32K | Same ctx as 35B-A3B — --mlock wires KV cache; 64K pushes total wired past 23 GB |
+| Qwen 3.6-27B Q4_K_XL (~17.6 GB) | 48K | More room than 32K; 64K pushes total wired too close to the ceiling on 32 GB |
 | Qwen 3.6-35B-A3B Q4 (~20 GB) | 32K | 64K leaves only ~2.3 GB free |
 
 64K is the practical ceiling on 32 GB for models in this weight range — do not go higher.
@@ -109,7 +109,7 @@ Quantising the KV cache halves its memory footprint with negligible quality loss
 | Qwen 3.6-35B Q4 | 64K | none | ~65 MB | ~3.4 GB | 0 | Marginal |
 | Qwen 3.6-35B Q4 | 64K | q8_0 | ~2.3 GB | ~1.6 GB | 0 | Comfortable |
 | Qwen 3.6-35B Q4 | 24K | q8_0/q8_0 | ~3.4 GB (est.) | — | 0 | Comfortable |
-| Qwen 3.6-27B Q4_K_XL | 32K | q4_0/q4_0 | ~6 GB (est.) | — | 0 | Comfortable |
+| Qwen 3.6-27B Q4_K_XL | 48K | q4_0/q4_0 | ~6 GB (est.) | — | 0 | More headroom, still aggressive |
 
 **`-ctk` / `-ctv` on Apple Silicon:**
 
@@ -122,6 +122,22 @@ Only **symmetric** KV cache quantisation types work on Metal. Mixed types (`q8_0
 | `q8_0/q4_0` | ❌ | Broken on Metal — CPU fallback, do not use |
 
 See [llama.cpp #21450](https://github.com/ggml-org/llama.cpp/issues/21450) for the upstream issue.
+
+---
+
+## MLX / mlx-openai-server
+
+For memory-sensitive MLX models, `mlx-openai-server` has a few useful pressure-relief knobs:
+
+| Flag | Suggested value | Effect |
+|------|-----------------|--------|
+| `--prompt-concurrency` | `1` | Only one prompt is prefilling at a time; reduces peak memory and prefill contention |
+| `--prefill-step-size` | `512` | Smaller prompt-ingestion chunks; lowers transient Metal spikes |
+| `--kv-bits` | `4` | Lower KV-cache memory usage during generation |
+| `--kv-group-size` | `64` | Standard group size for KV quantization |
+| `--quantized-kv-start` | `0` | Quantize KV from the first token |
+
+Together, these make the server much less likely to hit Metal OOMs on larger MLX models. The current Qwen 3.6-27B appliance profile uses all of them.
 
 ---
 
@@ -145,4 +161,4 @@ All current models use the same sampling settings:
 | `-ctk`/`-ctv` | `q8_0/q8_0` | `q8_0/q8_0` | `q4_0/q4_0` |
 | `-b` / `-ub` | `512` | `2048` | `2048` |
 | Model size | ~15 GB | ~20 GB | ~17.6 GB |
-| ctx target | 64K | 24K | 32K |
+| ctx target | 64K | 24K | 48K |
