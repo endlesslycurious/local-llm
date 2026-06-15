@@ -14,6 +14,7 @@
       <string>/opt/homebrew/bin/llama-server</string>
       <string>-m</string>
       <string>/Users/bender/models/Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf</string>
+      <string>--jinja</string>
       <string>--host</string>
       <string>0.0.0.0</string>
       <string>--port</string>
