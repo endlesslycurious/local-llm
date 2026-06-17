@@ -3,25 +3,16 @@
   "server": {
     "host": "0.0.0.0",
     "port": 8080,
-    "log_level": "trace",
-    "cors_origins": [
-      "*"
-    ],
-    "server_aliases": [
-      "localhost",
-      "127.0.0.1",
-      "Freyr.local",
-      "192.168.2.27"
-    ],
+    "log_level": "info",
+    "cors_origins": ["*"],
+    "server_aliases": ["localhost", "127.0.0.1", "Freyr.local"],
     "sse_keepalive_mode": "chunk",
     "auto_start_on_launch": true,
     "burst_decode_mode": "balanced",
     "preserve_mid_system_cache": true
   },
   "model": {
-    "model_dirs": [
-      "/Users/bender/models"
-    ],
+    "model_dirs": ["/Users/bender/models"],
     "model_dir": "/Users/bender/models",
     "model_fallback": false
   },
@@ -43,8 +34,8 @@
     "enabled": true,
     "hot_cache_only": false,
     "ssd_cache_dir": "/Users/daniel/.omlx/cache",
-    "ssd_cache_max_size": "741GB",
-    "hot_cache_max_size": "6GB",
+    "ssd_cache_max_size": "512GB",
+    "hot_cache_max_size": "4GB",
     "initial_cache_blocks": 256
   },
   "auth": {
@@ -58,7 +49,7 @@
   },
   "huggingface": {
     "endpoint": "",
-    "hf_cache_enabled": true
+    "hf_cache_enabled": false
   },
   "modelscope": {
     "endpoint": ""

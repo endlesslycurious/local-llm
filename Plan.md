@@ -120,9 +120,45 @@ Contingent on Phase 1 results. Rebuild the Mac Studio as a dedicated oMLX applia
 ### 2.1 Fresh macOS Install
 
 - Wipe & reinstall macOS
-- Create single account: `bender` (admin, not signed into Apple/iCloud)
+- Create single account (admin, not signed into Apple/iCloud)
 - Skip FileVault
-- Enable auto-login: System Settings → Users & Groups → Automatic login → bender
+- Enable auto-login: System Settings → Users & Groups → Automatic login
+
+> **Note:** The account name doesn't have to be `bender` — this doc uses it as a placeholder. If the machine is single-user with no service account separation, any name works. Update paths in `config/settings.json` accordingly.
+
+### 2.1.1 SSH Key Authentication
+
+Enable remote administration without passwords:
+
+1. **Enable Remote Login** on the Mac Studio:
+   - System Settings → General → Sharing → Remote Login → On
+   - Allow access for: your account (or All Users)
+
+2. **Copy your public key** from the MacBook:
+   ```bash
+   ssh-copy-id bender@freyr.local
+   ```
+   If you don't have a key yet, generate one first with `ssh-keygen -t ed25519`.
+
+3. **Disable password authentication** (optional, hardens the appliance):
+   ```bash
+   sudo nano /etc/ssh/sshd_config
+   ```
+   Set:
+   ```
+   PasswordAuthentication no
+   KbdInteractiveAuthentication no
+   ```
+   Then restart sshd:
+   ```bash
+   sudo launchctl kickstart -k system/com.openssh.sshd
+   ```
+
+4. **Verify** from the MacBook:
+   ```bash
+   ssh bender@freyr.local
+   ```
+   Should connect without prompting for a password.
 
 ### 2.2 Install Tooling
 
@@ -144,7 +180,8 @@ brew install huggingface-cli
 /Users/bender/
 ├── models/        ← model weights (--model-dir)
 ├── cache/         ← KV cold tier (--paged-ssd-cache-dir)
-└── .omlx/         ← oMLX config & logs (managed by oMLX)
+├── logs/          ← oMLX server logs (log_dir setting)
+└── .omlx/         ← config symlinks only (settings.json, model_settings.json)
 ```
 
 ### 2.4 Configure oMLX
@@ -209,6 +246,7 @@ Once the new setup is validated:
 - [ ] Remove `bin/fetch-mlx`, `bin/deploy`, `bin/reload`
 - [ ] Archive llama.cpp plists (move `daemons/*.plist` to `archive/daemons/`, keep `daemons/omlx.plist` as reference)
 - [ ] Track oMLX config in git — `config/settings.json` and `config/model_settings.json` symlinked into `~/.omlx/`
+- [ ] Update `config/settings.json` paths for final setup — `ssd_cache_dir` → `/Users/bender/cache`, `model_dir` → `/Users/bender/models`, `log_dir` → `/Users/bender/logs`
 
 ---
 
