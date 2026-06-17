@@ -24,7 +24,8 @@
       <string>--memory-guard-gb</string>
       <string>24</string>
       <string>--hot-cache-max-size</string>
-      <string>20%</string>
+      <string>4GB</string>
+      <string>--no-hf-cache</string>
       <string>--paged-ssd-cache-dir</string>
       <string>/Users/bender/cache</string>
       <string>--max-concurrent-requests</string>

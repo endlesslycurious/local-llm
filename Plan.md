@@ -41,8 +41,9 @@ sudo -u bender omlx serve \
   --port 8080 \
   --memory-guard aggressive \
   --memory-guard-gb 24 \
-  --hot-cache-max-size 20% \
+  --hot-cache-max-size 4GB \
   --paged-ssd-cache-dir /Users/bender/cache \
+  --no-hf-cache \
   --max-concurrent-requests 1
 ```
 
@@ -157,8 +158,9 @@ omlx serve \
   --port 8080 \
   --memory-guard aggressive \
   --memory-guard-gb 24 \
-  --hot-cache-max-size 20% \
+  --hot-cache-max-size 4GB \
   --paged-ssd-cache-dir /Users/bender/cache \
+  --no-hf-cache \
   --max-concurrent-requests 1
 ```
 
@@ -211,6 +213,6 @@ Once the new setup is validated:
 
 ## Open Questions
 
-- **Hot cache size**: 20% is a starting point. May need tuning based on Phase 1 benchmarks — if prefill is slow due to excessive SSD spill, increase to 30–40%.
+- **Hot cache size**: 4GB is a conservative starting point (~12.5% of 32 GB), leaving ~6.8 GB headroom for MLX overhead. If benchmarks show SSD spill hurting prefill latency, try 6GB.
 - **oQ quantization**: Could re-quantize from bf16 using oMLX's built-in oQ4 for better quality at same size. Worth trying after Phase 1 if baseline quality feels lacking.
 - **Context scaling**: oMLX has a Claude Code optimization that scales reported token counts so auto-compact triggers correctly. Worth investigating if Zed has similar behaviour.
