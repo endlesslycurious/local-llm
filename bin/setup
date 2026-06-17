@@ -1,0 +1,34 @@
+#!/bin/sh
+# Set up symlinks from ~/.omlx/ to version-controlled config.
+# Usage: bin/setup
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CONFIG_DIR="$SCRIPT_DIR/../config"
+OMLX_DIR="$HOME/.omlx"
+
+if [ ! -d "$CONFIG_DIR" ]; then
+    echo "Error: $CONFIG_DIR not found"
+    exit 1
+fi
+
+mkdir -p "$OMLX_DIR"
+
+for f in settings.json model_settings.json; do
+    SRC="$CONFIG_DIR/$f"
+    DEST="$OMLX_DIR/$f"
+
+    if [ ! -f "$SRC" ]; then
+        echo "Skipping $f (not found in config/)"
+        continue
+    fi
+
+    if [ -e "$DEST" ] && [ ! -L "$DEST" ]; then
+        echo "Backing up existing $DEST -> $DEST.bak"
+        mv "$DEST" "$DEST.bak"
+    fi
+
+    ln -sf "$SRC" "$DEST"
+    echo "Linked $DEST -> $SRC"
+done

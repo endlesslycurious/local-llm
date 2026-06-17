@@ -208,11 +208,13 @@ Once the new setup is validated:
 - [ ] Replace `bin/fetch` contents with current `bin/fetch-mlx` logic
 - [ ] Remove `bin/fetch-mlx`, `bin/deploy`, `bin/reload`
 - [ ] Archive llama.cpp plists (move `daemons/*.plist` to `archive/daemons/`, keep `daemons/omlx.plist` as reference)
+- [ ] Track oMLX config in git — `config/settings.json` and `config/model_settings.json` symlinked into `~/.omlx/`
 
 ---
 
 ## Open Questions
 
 - **Hot cache size**: 4GB is a conservative starting point (~12.5% of 32 GB), leaving ~6.8 GB headroom for MLX overhead. If benchmarks show SSD spill hurting prefill latency, try 6GB.
+- **SpecPrefill**: Attention-based sparse prefill for MoE models ([paper](https://arxiv.org/abs/2502.02789)). Qwen3-Coder-30B-A3B is MoE (30B total, 3B active) so this applies. Toggle in admin panel — could meaningfully speed up prefill at 128K context. Test after baseline is working.
 - **oQ quantization**: Could re-quantize from bf16 using oMLX's built-in oQ4 for better quality at same size. Worth trying after Phase 1 if baseline quality feels lacking.
 - **Context scaling**: oMLX has a Claude Code optimization that scales reported token counts so auto-compact triggers correctly. Worth investigating if Zed has similar behaviour.
