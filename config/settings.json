@@ -4,15 +4,23 @@
     "host": "0.0.0.0",
     "port": 8080,
     "log_level": "info",
-    "cors_origins": ["*"],
-    "server_aliases": ["localhost", "127.0.0.1", "Freyr.local"],
+    "cors_origins": [
+      "*"
+    ],
+    "server_aliases": [
+      "localhost",
+      "127.0.0.1",
+      "Freyr.local"
+    ],
     "sse_keepalive_mode": "chunk",
     "auto_start_on_launch": true,
     "burst_decode_mode": "balanced",
     "preserve_mid_system_cache": true
   },
   "model": {
-    "model_dirs": ["/Users/bender/models"],
+    "model_dirs": [
+      "/Users/bender/models"
+    ],
     "model_dir": "/Users/bender/models",
     "model_fallback": false
   },
@@ -28,7 +36,7 @@
   "scheduler": {
     "max_concurrent_requests": 1,
     "embedding_batch_size": 32,
-    "chunked_prefill": false
+    "chunked_prefill": true
   },
   "cache": {
     "enabled": true,
