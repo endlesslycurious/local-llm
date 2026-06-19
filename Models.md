@@ -6,13 +6,40 @@ Add a row each time you pull and test a new model. Link directly to the HuggingF
 
 ---
 
-## Model installation
+## Model Downloading
 
-`oMLX` can search for and download models itself from [Hugging Face](https://huggingface.co) via the admin dashboard, all that is needed is either the repo ID or the name.
+### oMLX
+
+oMLX can search for and download models itself from [Hugging Face](https://huggingface.co) via the admin dashboard, all that is needed is either the repo ID or the name.
+
+### Hugging Face CLI
+
+We have also setup the [Hugging Face CLI](https://huggingface.co/docs/huggingface_hub/en/guides/cli) which can also download models directly too.
+
+```bash
+# Manual download via HF CLI
+hf download mlx-community/Qwen3.5-9B-4bit-mlx --local-dir ~/models/mlx-community/Qwen3.5-9B-4bit-mlx
+```
 
 ---
 
-## Log
+## Model Configuration
+
+After downloading a model, configure it via the admin panel:
+
+1. Open `http://<host>:8080/admin`
+2. Go to Model Settings
+3. Configure per model:
+   - Context window (e.g., 131072 for 128K)
+   - Temperature, top_p, top_k
+   - TurboQuant KV cache (8-bit recommended)
+   - Pin as default if desired
+
+See [Tuning.md](Tuning.md) for recommended settings per model tier.
+
+---
+
+## Model Log
 
 | Model | Quant | File size | Context | Speed (tok/s) | Notes | Date |
 |-------|-------|-----------|---------|---------------|-------|------|
@@ -25,16 +52,6 @@ Add a row each time you pull and test a new model. Link directly to the HuggingF
 
 ---
 
-## Config notes
+## Tuning notes
 
 See [Tuning.md](Tuning.md) for detailed configuration information.
-
----
-
-## Future Models
-
-Models from the insiderllm guide worth pulling next, suited to the 32–48 GB tier:
-
-| Model | Quant | File size | Source | Why |
-|-------|-------|-----------|--------|-----|
-| Gemma 4 26B-A4B | Q8 | ~28 GB | [unsloth GGUF](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | Higher-quality quant of the current appliance model |

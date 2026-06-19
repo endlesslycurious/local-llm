@@ -64,3 +64,17 @@ Quantising the KV cache (TurboQuant) halves its memory footprint with negligible
 ## Model-Specific Configuration
 
 See [model settings](./config/model_settings.json) for the per model configuration in use.
+
+---
+
+## Troubleshooting
+
+### Model runs slowly:
+- Check GPU wired limit: `sysctl iogpu.wired_limit_mb`
+- Monitor with: `btop` or admin dashboard
+- Reduce context window in model settings
+
+### Out of memory:
+- Lower context window
+- Enable TurboQuant KV cache (8-bit)
+- Try smaller model

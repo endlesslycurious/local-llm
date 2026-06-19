@@ -136,6 +136,12 @@ Enable `oMLX` to accept incoming connections throught the firewall:
 security set-appfirewall-rule -t incoming --app-firewall allow --process "omlx-server"
 ```
 
+Verify firewall settings:
+
+```bash
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --listapps
+```
+
 ---
 
 ## 7. Start oMLX Service
@@ -239,3 +245,6 @@ In Zed's `settings.json`, under `language_models`:
 ## Done!
 
 In theory everything should be working and you can admistrate `oMLX` via its web admin e.g. `http://<host>.local:8080/admin/dashboard?tab=status`.
+- See [Models](./Models.md) for the list of models I tried and how to download them.
+- See [Tuning](./Tuning.md) for model settings and how to increase the GPU RAM limit on MacOS.
+-
