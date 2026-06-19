@@ -39,8 +39,8 @@
     "initial_cache_blocks": 256
   },
   "auth": {
-    "api_key": "omlx-e60bq9odsw38vl7h",
-    "secret_key": "ab18fbb4485bdcdef597204f59345c48fa1973fc8f210cc7157c1d363cea71c7",
+    "api_key": "NOT-A-VALID-KEY",
+    "secret_key": "NOT-A-REAL-SECRET",
     "skip_api_key_verification": true,
     "sub_keys": []
   },

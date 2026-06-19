@@ -123,7 +123,7 @@ ln -sf ./config/model_settings.json ~/.omlx/model_settings.json
 
 ### Note:
 - These settings files contain my oMLX config and model configurations, this is why there isn't more oMLX setting steps!
-- There are API & secret keys defined in `settings.json` but as `skip_api_key_verification` is enabled they're not used and therefore not a concern. If you were to enable the API key you should rotate the key in the admin panel!
+- There are API & secret keys defined in `settings.json` with dummy values, but as `skip_api_key_verification` is enabled they're not used and therefore not a concern. If you were to enable the API key you should rotate the key in the admin panel!
 - The settings file do reference my current username and machine name, if using you'd need to update these!
 
 ---
