@@ -2,22 +2,11 @@
 
 Personal setup and model log for running LLMs locally on Apple Silicon via [oMLX](https://github.com/jundot/omlx).
 
-## Requirements
-
-### Context Window
+## Requirements - Context Window
 
 1. Ideally 128k or more context window for agentic workloads, this will only be possible with oMLX's offloading to SSD (disc) feature.
 2. 48-64k is a very managable amount of context for single tasks.
 3. 32k is the bare minimium in my experience.
-
-## Hardware
-
-| | |
-|---|---|
-| **Machine** | Mac Studio M2 Max |
-| **RAM** | 32 GB unified memory |
-| **Memory bandwidth** | ~400 GB/s |
-| **Tier** | 32–48 GB — runs Qwen 3.6-35B-A3B Q4 comfortably |
 
 ## Repo Contents
 
@@ -28,10 +17,19 @@ Personal setup and model log for running LLMs locally on Apple Silicon via [oMLX
 | [`Setup.md`](Setup.md) | oMLX setup on a dedicated Mac host |
 | [`Tuning.md`](Tuning.md) | Performance flags, wired memory limit, KV cache quantisation, sampling parameters |
 
+## Hardware
+
+| | |
+|---|---|
+| **Machine** | Mac Studio M2 Max |
+| **RAM** | 32 GB unified memory |
+| **Memory bandwidth** | ~400 GB/s |
+| **Memory Tier** | 32–48 GB |
+
 ## Memory tier cheat sheet
 
 | RAM | Recommended model | Notes |
-|-----|-------------------|-------|
+|:---:|-------------------|-------|
 | 8 GB | Gemma 4 E2B or Qwen 3.5 4B | ~5 GB available; platform is outgrowing this tier |
 | 16 GB | Qwen 3.5 9B Q4 (~6.6 GB) | Best all-rounder; `/think` mode for chain-of-thought |
 | 24 GB | Qwen 3.6-27B Q4_K_XL (tight) or Qwen 3 14B (safe) | 17.6 GB model leaves ~5 GB for OS + context |
