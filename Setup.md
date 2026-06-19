@@ -1,222 +1,161 @@
-# Mac Studio LLM Appliance Setup (llama.cpp)
+# Mac Studio LLM Appliance Setup
 
-> **Hardware:** Mac Studio M2 Max, 32 GB unified memory. See [Models.md](Models.md) for what has been tested, or the [insiderllm guide](https://insiderllm.com/guides/best-local-llms-mac-2026/) for current recommendations.
+This guide sets up a *dedicated* Mac Studio (`<host>`) as a local coding assistant serving local models via [oMLX](https://github.com/jundot/omlx) only. 
 
-This guide sets up a dedicated Mac Studio as a local coding assistant using local models via llama.cpp, running under a separate service account (`bender`).
-
----
-
-## 1. Create Service Account
-
-Create a standard (non-admin) user:
-
-```bash
-sudo sysadminctl -addUser bender
-```
-
-Notes:
-- Do NOT grant admin privileges
-- Do NOT use interactively
+- **Dedicated machine:** We are aiming to have `oMLX` utilise as much of the Mac Studio as possible to increase LLM performance, this machine will be used for *nothing else*!
+- **Target Hardware:** Mac Studio M2 Max, 32 GB unified memory. 
+- **Workstation:** The assumption is the user will be using another mac as their workstation, it will be refered to as `MacBook` in this doc.
 
 ---
 
-## 2. Install Runtime (Main Account)
+## 1. Fresh MacOS Install
 
-### llama.cpp
-Install llama.cpp via Homebrew:
+This guide assumes a fresh MacOS install is being configured.
 
-```bash
-brew install llama.cpp
-```
+1. Reinstall MacOS:
+- Unencrypted hard drive, e.g. FileVault disabled e.g. `APFS` not `APFS(Encrypted)`.
+- User account `<user>` in the admin group.
+- Do not sign into an Apple account, this is to avoid syncing media, photos, etc and activating their related services e.g. `photosd`.
 
-Verify install:
-
-```bash
-which llama-server
-# /opt/homebrew/bin/llama-server
-```
-
-### mlx-openai-server
-
-Curently a dependency of mlx-openai-server requires `Python 3.13` (see issue) and brew is installing `Python 3.14` by default. `Rust` is also required.
-
-```bash
-brew install python@3.13 rust
-```
-
-Then install mlx-openai-server via `uv`:
-
-`uv tool install` is user-scoped. Install it as the same user that will run the LaunchDaemon (`bender` in this setup).
-
-```bash
-sudo -u bender -H bash
-uv tool install mlx-openai-server --python 3.13
-```
-
-Verify install:
-```bash
-mlx-openai-server --version
-
-✨ mlx-openai-server - OpenAI Compatible API Server for MLX models ✨
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 Version: 1.8.1
-```
-
-For Qwen 3.6 tool use, launch `mlx-openai-server` with `--reasoning-parser qwen3 --tool-call-parser qwen3_coder --enable-auto-tool-choice` so the server returns structured `tool_calls` instead of raw `<tool_call>` text.
-
-For **llama.cpp + Qwen3-Coder**, the equivalent is `--jinja --reasoning-format deepseek`. `--jinja` activates the model's embedded tool-call template; `--reasoning-format deepseek` strips `<think>` blocks out of `message.content` into `message.reasoning_content` so they don't corrupt the tool call output. Without `--reasoning-format deepseek`, the default `auto` mode can leave thinking tokens tangled with tool call tags, causing tool calls to fail silently.
+2. Post Installation:
+- Auto-login enabled for the user account: System Settings → Users & Groups → Automatic login.
+- Enable screen sharing: Systems Settings → Sharing → Screen Sharing.
+- Enable firewall: System Settings → Network → Firewall.
 
 ---
 
-## 3. Directory Structure
+### 2 SSH Key Authentication
 
-From your main admin account, create the service account's working directories:
+Enable remote administration without entering password to connect:
 
-```bash
-sudo mkdir -p /Users/bender/{models,logs}
-sudo chown -R bender:staff /Users/bender/{models,logs}
-```
+1. Enable Remote Login on the Mac Studio:
+   - System Settings → General → Sharing → Remote Login → On
+   - Allow access for: your account (or All Users)
 
-Final layout:
+2. Copy your public key from the MacBook:
+   ```bash
+   ssh-copy-id <user>@<host>.local
+   ```
+   If you don't have a key yet, generate one first with `ssh-keygen -t ed25519`.
 
-```
-/Users/bender/
-  models/
-  logs/
-```
+3. Disable password authentication (optional, hardens the appliance):
+   ```bash
+   sudo nano /etc/ssh/sshd_config
+   ```
+   Set:
+   ```
+   PasswordAuthentication no
+   KbdInteractiveAuthentication no
+   ```
+   Then restart sshd:
+   ```bash
+   sudo launchctl kickstart -k system/com.openssh.sshd
+   ```
 
----
-
-## 4. Add Model
-
-From your main account, download a single GGUF file with `bin/fetch`, or an MLX model repo with `bin/fetch-mlx`:
-
-```bash
-sudo bin/fetch unsloth/Qwen3.6-27B-GGUF Qwen3.6-27B-UD-Q4_K_XL.gguf
-sudo bin/fetch unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf
-sudo bin/fetch-mlx mlx-community/Qwen3.6-27B-4bit
-```
-
-If you need a non-default branch or tag:
-
-```bash
-sudo bin/fetch-mlx mlx-community/Qwen3.6-27B-4bit main
-```
-
-This downloads the file into `/Users/bender/models/`, or the MLX repo into `/Users/bender/models/<repo>/`, then sets ownership to `bender:staff` and locks permissions to read-only.
-
-> **Note:** `llama-cli --hf-repo` also downloads from Hugging Face but always writes to the HF cache (`~/.cache/huggingface/hub/`) regardless of any path flag — it cannot download directly to a target directory. Use `bin/fetch` or `bin/fetch-mlx` when the destination matters.
+4. Verify from the MacBook:
+   ```bash
+   ssh <user>@<host>.local
+   ```
+   Should connect without prompting for a password.
 
 ---
 
-## 5. System Tuning
+## 3. Install Runtime & Dependencies
 
-Two one-time settings before running the server. Full details and LaunchDaemons for persistence in [Tuning.md](Tuning.md).
-
-**Wired memory limit** — raise the GPU memory allocation ceiling to 70% of unified memory, or large model allocations may be silently rejected and fall back to CPU:
+1. HomeBrew - package manager.
 
 ```bash
-sudo sysctl iogpu.wired_limit_mb=22938
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-**Flags and context** — per-model flags are pre-configured in each plist in [`daemons/`](daemons/). See [Tuning.md](Tuning.md) for the rationale behind each flag and the recommended context window per model.
+2. oMLX - LLM server.
 
----
-
-## 6. Create LaunchDaemon
-
-A LaunchDaemon starts automatically at boot without requiring a user login — the right choice for an appliance-style server.
-
-The [`daemons/`](daemons/) folder in this repo contains a ready-made plist for each tested model, named after the model file. To deploy one, copy it into place and rename it:
+Install the oMLX LLM server next:
 
 ```bash
-sudo cp daemons/<model>.plist /Library/LaunchDaemons/local.llama.server.plist
+brew tap jundot/omlx https://github.com/jundot/omlx
+brew trust jundot/omlx
+brew install omlx
 ```
 
-The plist content is shown below for reference. If creating manually:
+3. Hugging Face CLI - Model downloader.
 
 ```bash
-sudo nano /Library/LaunchDaemons/local.llama.server.plist
+brew install hf
 ```
 
-Paste the following for a `llama.cpp` hosted model:
+4. btop - Resource monitor.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
- "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-  <dict>
-    <key>Label</key>
-    <string>local.llama.server</string>
+Highly recommend [btop](https://github.com/aristocratos/btop) for monitoring the system over ssh.
 
-    <key>UserName</key>
-    <string>bender</string>
-
-    <key>ProgramArguments</key>
-    <array>
-      <string>/opt/homebrew/bin/llama-server</string>
-      <string>-m</string>
-      <string>/Users/bender/models/<model>.gguf</string>
-      <string>--host</string>
-      <string>0.0.0.0</string>
-      <string>--port</string>
-      <string>8080</string>
-      <string>--ctx-size</string>
-      <string>65536</string>
-      <string>--batch-size</string>
-      <string>512</string>
-      <string>--ubatch-size</string>
-      <string>512</string>
-      <string>--threads</string>
-      <string>8</string>
-      <string>--n-gpu-layers</string>
-      <string>-1</string>
-    </array>
-
-    <key>RunAtLoad</key>
-    <true/>
-
-    <key>KeepAlive</key>
-    <true/>
-
-    <key>StandardOutPath</key>
-    <string>/Users/bender/logs/llm.out</string>
-
-    <key>StandardErrorPath</key>
-    <string>/Users/bender/logs/llm.err</string>
-  </dict>
-</plist>
+```bash
+brew install btop
 ```
 
 ---
 
-## 7. Set Permissions
+## 4. Directory Structure
 
-LaunchDaemons require specific ownership and permissions or launchd will refuse to load them:
+Create these working directories for oMLX to hold the models, disk cache and logs:
 
 ```bash
-sudo chown root:wheel /Library/LaunchDaemons/local.llama.server.plist
-sudo chmod 644 /Library/LaunchDaemons/local.llama.server.plist
+mkdir /Users/<user>/models
+mkdir /Users/<user>/cache
+mkdir /Users/<user>/logs
+```
+
+Then create the settings dir:
+
+```bash
+mkdir ~/.omlx
 ```
 
 ---
 
-## 8. Load and Start Service
+## 5. Settings files linked
+
+We will keep the settings files in this repo for change tracking and link them into the `.omlx` directory for `oMLX` to use.
 
 ```bash
-sudo launchctl bootstrap system /Library/LaunchDaemons/local.llama.server.plist
-sudo launchctl kickstart system/local.llama.server
+ln -sf ./config/settings.json ~/.omlx/settings.json
+ln -sf ./config/model_settings.json ~/.omlx/model_settings.json
+```
+
+### Note:
+- These settings files contain my oMLX config and model configurations, this is why there isn't more oMLX setting steps!
+- There are API & secret keys defined in `settings.json` but as `skip_api_key_verification` is enabled they're not used and therefore not a concern. If you were to enable the API key you should rotate the key in the admin panel!
+- The settings file do reference my current username and machine name, if using you'd need to update these!
+
+---
+
+## 6. Configure Firewall
+
+Enable `oMLX` to accept incoming connections throught the firewall:
+
+```bash
+security set-appfirewall-rule -t incoming --app-firewall allow --process "omlx-server"
 ```
 
 ---
 
-## 9. Verify
+## 7. Start oMLX Service
 
-Check process:
+`oMLX` when installed via `brew` can use `brew service` to manage app lifespan, see [details](https://github.com/jundot/omlx#homebrew-service).
 
 ```bash
-ps aux | grep llama-server
+brew services start omlx
+```
+
+> Note: `oMLX` will use the settings files we linked earlier for its configuration.
+
+---
+
+## 8. Verify
+
+Check process exists:
+
+```bash
+ps aux | grep omlx-server
 ```
 
 Check health endpoint:
@@ -228,29 +167,12 @@ curl http://localhost:8080/health
 Check logs:
 
 ```bash
-tail -f /Users/bender/logs/llm.out
+tail -f /Users/<user>/logs/
 ```
 
 ---
 
-## 10. Restart After Changes
-
-After editing the plist, fully reload it:
-
-```bash
-sudo launchctl bootout system/local.llama.server
-sudo launchctl bootstrap system /Library/LaunchDaemons/local.llama.server.plist
-```
-
-To restart only the process without reloading the plist (e.g. after swapping a model file):
-
-```bash
-sudo launchctl kickstart -k system/local.llama.server
-```
-
----
-
-## 11. Reboot Test
+## 9. Reboot Test
 
 Reboot the Mac Studio:
 
@@ -268,7 +190,7 @@ If successful, the model is running without user login — appliance behaviour c
 
 ---
 
-## 12. Connect from Editor
+## 10. Connect from Editor
 
 Use the OpenAI-compatible endpoint:
 
@@ -291,8 +213,8 @@ In Zed's `settings.json`, under `language_models`:
 
 ```json
 "openai_compatible": {
-  "Freyr": {
-    "api_url": "http://freyr.local:8080/v1",
+  "<host>": {
+    "api_url": "http://<host>.local:8080/v1",
     "available_models": [
       {
         "name": "gemma-4-26B-A4B-it-UD-Q4_K_M.gguf",
@@ -312,90 +234,8 @@ In Zed's `settings.json`, under `language_models`:
   }
 }
 ```
-
-For tool use, the runtime must be configured to return structured `tool_calls` rather than raw tagged text:
-
-| Runtime | Required flags |
-|---------|---------------|
-| `mlx-openai-server` (Qwen 3.6) | `--reasoning-parser qwen3 --tool-call-parser qwen3_coder --enable-auto-tool-choice` |
-| `llama-server` (Qwen3-Coder) | `--jinja --reasoning-format deepseek` |
-
-The model name must match the `id` returned by `GET /v1/models`. Note that Zed requires the full filename including the `.gguf` extension to properly identify and load the model. To enable vision, a separate mmproj file is required — see llama.cpp docs for `--mmproj`.
-
 ---
 
-## 13. Updating
+## Done!
 
-From your main account:
-
-```bash
-brew upgrade llama.cpp
-```
-
-Restart the service:
-
-```bash
-sudo launchctl kickstart -k system/local.llama.server
-```
-
----
-
-## 14. Switching Models
-
-Each model in [`daemons/`](daemons/) has its own plist pre-configured with the right model path and context settings.
-
-**1. Download the model file or MLX repo to the Mac Studio:**
-
-Use `bin/fetch` for a single GGUF file, or `bin/fetch-mlx` for a Hugging Face MLX repo tree:
-
-```bash
-sudo bin/fetch <repo> <filename>
-sudo bin/fetch-mlx <repo> [revision]
-```
-
-**2. Deploy its plist:**
-
-The convience script `bin/deploy` provides this functionality, call it with `sudo bin/deploy <model>`:
-
-```bash
-sudo cp daemons/<model>.plist /Library/LaunchDaemons/local.llama.server.plist
-sudo chown root:wheel /Library/LaunchDaemons/local.llama.server.plist
-sudo chmod 644 /Library/LaunchDaemons/local.llama.server.plist
-```
-
-**3. Reload the service:**
-
-The convience script `bin/reload` provides this functionality, call it with `sudo bin/reload`:
-
-```bash
-sudo launchctl bootout system/local.llama.server
-sudo launchctl bootstrap system /Library/LaunchDaemons/local.llama.server.plist
-```
-
-**4. Verify:**
-
-```bash
-curl http://localhost:8080/health
-tail -f /Users/bender/logs/llm.out
-```
-
-The old model file can be left in `/Users/bender/models/` for quick switching, or removed to free up disk space.
-
----
-
-## 15. Optional Enhancements
-
-- Run a second model on port 8081 for a different use case
-- Add firewall rules to restrict access to trusted LAN hosts
-- Reverse proxy with auth if exposing beyond LAN
-
----
-
-## Summary
-
-- Main account: installs and manages tools
-- `bender`: runs model only
-- llama.cpp: fast, native Metal inference
-- launchd: reliable service management
-
-This setup gives high performance, clean isolation, and minimal operational overhead.
+In theory everything should be working and you can admistrate `oMLX` via its web admin e.g. `http://<host>.local:8080/admin/dashboard?tab=status`.

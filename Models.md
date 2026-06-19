@@ -2,27 +2,32 @@
 
 Personal log of every model pulled and tested on the Mac Studio M2 Max (32 GB). See [README.md](README.md) for the tier cheat sheet, or the [insiderllm guide](https://insiderllm.com/guides/best-local-llms-mac-2026/) for current recommendations.
 
-Add a row each time you pull and test a new model. Link directly to the HuggingFace repo or Ollama library page so the model can be re-pulled later.
+Add a row each time you pull and test a new model. Link directly to the HuggingFace repo so the model can be re-pulled later.
+
+---
+
+## Model installation
+
+`oMLX` can search for and download models itself from [Hugging Face](https://huggingface.co) via the admin dashboard, all that is needed is either the repo ID or the name.
 
 ---
 
 ## Log
 
-| Model | Quant | File size | Source | Runtime | Speed (tok/s) | Notes | Date |
-|-------|-------|-----------|--------|---------|---------------|-------|------|
-| [Gemma 4 26B-A4B](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | Q4_K_M (UD) | ~15 GB | [unsloth/gemma-4-26B-A4B-it-GGUF](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | llama.cpp | — | Initial appliance model; 4B active params, 256K context | 2026-05 |
-| [Qwen 3.6-35B-A3B](https://ollama.com/library/qwen3.6) | Q4_K_M (UD) | ~20 GB | [unsloth GGUF](https://huggingface.co/unsloth/Qwen3.6-35B-A3B-GGUF) / [ollama](https://ollama.com/library/qwen3.6) | llama.cpp | — | 2026 default MoE — 3B active params, 262K context | 2026-05 |
-| [Qwen 3.6-27B](https://huggingface.co/unsloth/Qwen3.6-27B-GGUF) | Q4_K_XL (UD) | ~17.6 GB | [unsloth/Qwen3.6-27B-GGUF](https://huggingface.co/unsloth/Qwen3.6-27B-GGUF) | llama.cpp | — | Best local coding model; SWE-bench 77.2; more headroom than 35B-A3B; ~25 tok/s (Simon Willison measured 25.57 on non-UD Q4_K_M — UD-Q4_K_XL will be marginally slower at 17.6 GB) | 2026-06 |
-| [Qwen 3.6-27B (MLX)](https://huggingface.co/mlx-community/Qwen3.6-27B-4bit) | 4bit | — | [mlx-community/Qwen3.6-27B-4bit](https://huggingface.co/mlx-community/Qwen3.6-27B-4bit) | mlx-openai-server | — | MLX variant for the appliance-style OpenAI-compatible server; uses specific flags for structured tool calls (see Tuning.md) | 2026-06 |
-| [Qwen3-Coder-30B-A3B-Instruct](https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF) | UD-Q4_K_XL | ~17.7 GB | [unsloth GGUF](https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF) | llama.cpp | — | Coding-specialised model; requires specific flags for tool calls (see Tuning.md) | 2026-06 |
+| Model | Quant | File size | Context | Speed (tok/s) | Notes | Date |
+|-------|-------|-----------|---------|---------------|-------|------|
+| [Gemma 4 26B-A4B](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | 4bit | ~15 GB | - | — | Initial appliance model; 4B active params | 2026-05 |
+| [Qwen 3.6-35B-A3B](https://ollama.com/library/qwen3.6) | 4bit | ~20 GB | - | — | 2026 default MoE — 3B active params | 2026-05 |
+| [Qwen 3.6-27B](https://huggingface.co/unsloth/Qwen3.6-27B-GGUF) | 4bit | ~17.6 GB | 49K | — | Best local coding model; SWE-bench 77.2; more headroom than 35B-A3B; ~25 tok/s (Simon Willison) | 2026-06 |
+| [Qwen 3.6-27B (MLX)](https://huggingface.co/mlx-community/Qwen3.6-27B-4bit) | 4bit | — | 49K | — | MLX variant; structured tool calls support | 2026-06 |
+| [Qwen3-Coder-30B-A3B-Instruct](https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF) | 4bit | ~17.7 GB | 131K | — | Coding-specialised model; requires specific flags for tool calls | 2026-06 |
+| [Qwen3.5-9B](https://huggingface.co/mlx-community/Qwen3.5-9B-4bit-mlx) | 4bit | ~5.3 GB | 131K | — | Current default/pinned model; excellent speed-to-capability ratio | 2026-06 |
 
 ---
 
 ## Config notes
 
 See [Tuning.md](Tuning.md) for detailed configuration information.
-
-**Baseline (llama.cpp not running):** ~91% free, ~1.5 GB wired. Activity Monitor reports ~13 GB "used" at idle, but the majority is reclaimable file cache — not real pressure.
 
 ---
 

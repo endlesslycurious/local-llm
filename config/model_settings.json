@@ -19,7 +19,7 @@
       "turboquant_skip_last": true,
       "specprefill_enabled": false,
       "dflash_enabled": false,
-      "dflash_draft_model": "/Users/bender/models/mlx-community/Qwen3.6-27B-MTP-4bit",
+      "dflash_draft_model": "/Users/daniel/models/mlx-community/Qwen3.6-27B-MTP-4bit",
       "dflash_draft_quant_enabled": false,
       "dflash_in_memory_cache": true,
       "dflash_in_memory_cache_max_entries": 4,
