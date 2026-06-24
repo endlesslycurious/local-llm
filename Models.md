@@ -42,13 +42,81 @@ See [Tuning.md](Tuning.md) for recommended settings and tuning tips.
 
 ## Model Log
 
-Ordered from most recently to oldest model tried.
+Ordered from latest to oldest model tried. Models not in `model_settings.json` are kept for reference.
 
-| Model | Quant | File size | Context | Speed (tok/s) | Notes | Date |
-|-------|:-----:|:---------:|:-------:|:-------------:|-------|:----:|
-| [Qwen3.5-9B](https://huggingface.co/mlx-community/Qwen3.5-9B-4bit-mlx) | 4bit | ~5.3 GB | 131K | — | Current default/pinned model; excellent speed-to-capability ratio | 2026-06 |
-| [Qwen3-Coder-30B-A3B-Instruct](https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF) | 4bit | ~17.7 GB | 131K | — | Coding-specialised model; requires specific flags for tool calls | 2026-06 |
-| [Qwen 3.6-27B (MLX)](https://huggingface.co/mlx-community/Qwen3.6-27B-4bit) | 4bit | — | 49K | — | MLX variant; structured tool calls support | 2026-06 |
-| [Qwen 3.6-27B](https://huggingface.co/unsloth/Qwen3.6-27B-GGUF) | 4bit | ~17.6 GB | 49K | — | Best local coding model; SWE-bench 77.2; more headroom than 35B-A3B; ~25 tok/s (Simon Willison) | 2026-06 |
-| [Qwen 3.6-35B-A3B](https://ollama.com/library/qwen3.6) | 4bit | ~20 GB | - | — | 2026 default MoE — 3B active params | 2026-05 |
-| [Gemma 4 26B-A4B](https://huggingface.co/unsloth/gemma-4-26B-A4B-it-GGUF) | 4bit | ~15 GB | - | — | Initial appliance model; 4B active params | 2026-05 |
+### Qwen 3.6 27B (Thinker)
+
+| Model | Repo | Params. | Quant | File size | Thinking | Date |
+|:-------:|:-------:|:-----:|:---------:|:-------:|:-------------: |:----:|
+| [Qwen 3.6](https://huggingface.co/Qwen/Qwen3.6-27B) | [Qwen3.6-27B](https://huggingface.co/mlx-community/Qwen3.6-27B-MLX-4bit) | 27B | 4 bit | ~17.6 GB | Yes | 2026-06 |
+
+Configured basic settings:
+| Context | Max Tokens | Temp | Top P | Top K | Rep. Penalty |
+|:-------:|:-----:|:---------:|:-------:|:-------------: |:----:|
+| 48k | 8k | 0.6 | 0.95 | 20 | 1.0 |
+
+#### Notes
+- More capable model for deep thinking tasks.
+- Thinking mode enabled for chain-of-thought reasoning.
+- TurboQuant KV cache enabled at 4-bit precision (q4_0) with skip last token for maximum memory efficiency.
+- DFlash in-memory cache enabled with 8GB max and 4 entry limit for recent context.
+- Not pinned - use when advanced reasoning is needed, not as daily driver.
+
+
+### Qwen 3.5 9B (Default Model)
+
+| Model | Repo | Params. | Quant | File size | Thinking | Date |
+|:-------:|:-------:|:-----:|:---------:|:-------:|:-------------: |:----:|
+| [Qwen 3.5](https://huggingface.co/Qwen/Qwen3.5-9B) | [Qwen3.5-9B](https://huggingface.co/mlx-community/Qwen3.5-9B-MLX-4bit) | 9B | 4 bit | ~5.3 GB | No | 2026-06
+
+Configured basic settings:
+| Context | Max Tokens | Temp | Top P | Top K | Rep. Penalty | Min P | Pres. Penalty |
+|:-------:|:-----:|:---------:|:-------:|:-------------: |:----:|:----:|:----:|
+| 128k | 8k | 0.7 | 0.8 | 20 | 1.0 | 0.0 | 1.5|
+
+#### Advanced Settings
+- **TurboQuant KV cache**: enabled at 4-bit precision with skip last token
+- **Speculative Prefill**: enabled with Qwen3.5-0.8B drafter
+  - Threshold: 64k tokens (triggers when context > 64k)
+  - Keep ratio: 20% of draft tokens
+
+#### Notes
+- **Current default model.**
+- Excellent speed-to-capability ratio for daily use.
+- **Speculative decoding enabled** with Qwen3.5-0.8B drafter for faster generation on long contexts.
+- Thinking mode disabled for more direct, efficient responses.
+- 128k context window enabled via turboquant kv compression.
+- Recommended for most 16-32GB systems due to balance of performance and quality.
+
+### Qwen 3.5 0.8B (Drafter)
+
+| Model | Repo | Params. | Quant | File size | Thinking | Date |
+|:-------:|:-------:|:-----:|:---------:|:-------:|:-------------: |:----:|
+| [Qwen 3.5](https://huggingface.co/Qwen/Qwen3.5-0.8B) | [Qwen3.5-0.8B](https://huggingface.co/mlx-community/Qwen3.5-0.8B-MLX-4bit) | 0.8B | 4 bit | ~530 MB | No | 2026-06
+
+Configured basic settings:
+| Context | Max Tokens | Temp |
+|:-------:|:-----:|:---------:|
+| 4k | 256 | 0.2 |
+
+KV Cache Settings:
+| Setting | Value | Description |
+|:--------:|:------:|:------------|
+| `turboquant_kv_enabled` | true | TurboQuant enabled for KV cache compression |
+| `turboquant_kv_bits` | 4.0 | 4-bit quantization for maximum memory efficiency |
+
+#### Notes
+- **Drafter model for speculative decoding** when used with Qwen3.5-9B.
+- Smallest model in the configuration, optimized for prefill phase speed.
+- Lower temperature (0.2) for more deterministic draft predictions.
+- TurboQuant KV cache enabled at 4-bit precision for maximum efficiency.
+- Pinned - for quick code completion responses.
+
+---
+
+## Retired Models
+
+|   Date  |  Model  | Notes                                                |
+|:-------:|:-------:|------------------------------------------------------|
+| 2026/06 | [Qwen 3 Coder](https://huggingface.co/mlx-community/Qwen3-Coder-30B-A3B-Instruct-4bit) | 30B-A3B MoE is interesting but 27B is more capable. |
+| 2026/05 | [Gemma 4](https://huggingface.co/google/gemma-4-12B-it) | Seems highly capable but keeps stopping mid-thought. requiring babysitting to complete tasks. |

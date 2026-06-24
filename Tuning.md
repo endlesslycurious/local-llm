@@ -61,11 +61,80 @@ Quantising the KV cache (TurboQuant) halves its memory footprint with negligible
 
 ---
 
-## Model-Specific Configuration
+## oMLX Settings
 
-See [model settings](./config/model_settings.json) for the per model configuration in use.
+oMLX configuration settings that control runtime behavior, memory management, and caching.
 
----
+### Memory Settings
+
+Memory management is critical for oMLX on Apple Silicon. The memory_guard settings control how oMLX interacts with the system's memory pressure.
+
+| Setting | Value | Description |
+|:--------:|:------:|:------------|
+| `prefill_memory_guard` | `true` | Apply memory guard during prefill phase |
+| `memory_guard_tier` | `aggressive` | Use aggressive memory guard tier |
+| `soft_threshold` | `0.85` | Memory pressure threshold for soft reclaim |
+| `hard_threshold` | `0.95` | Memory pressure threshold for hard reclaim |
+| `prefill_safe_zone_ratio` | `0.8` | Fraction of soft threshold as safe zone |
+| `prefill_min_chunk_tokens` | `32` | Minimum tokens per chunk for batching |
+### Scheduler Settings (Concurrency)
+
+Scheduler settings control how oMLX handles concurrent requests and batching.
+
+| Setting | Value | Description |
+|:--------:|:------:|:------------|
+| `max_concurrent_requests` | `1` | Maximum concurrent requests |
+| `embedding_batch_size` | `16` | Batch size for embedding requests |
+| `chunked_prefill` | `true` | Enable chunked prefill for long contexts |
+
+### Cache Settings
+
+KV cache settings control how oMLX stores intermediate states.
+
+| Setting | Value | Description |
+|:--------:|:------:|:------------|
+| `enabled` | `true` | Enable KV cache |
+| `hot_cache_only` | `false` | Keep both hot and cold cache |
+| `ssd_cache_dir` | `/Users/bender/cache` | Directory for SSD cache |
+| `ssd_cache_max_size` | `64GB` | Maximum SSD cache size |
+| `hot_cache_max_size` | `2GB` | Maximum hot cache size |
+| `initial_cache_blocks` | `256` | Number of blocks to pre-allocate |
+
+### Sampling Settings
+
+**Global defaults** (can be overridden per-model in model_settings.json):
+| Setting | Default Value |
+|:--------|:-------------|
+| `max_context_window` | 128k |
+| `max_tokens` | 16k |
+| `temperature` | 0.7 |
+| `top_p` | 0.8 |
+| `top_k` | 20 |
+| `repetition_penalty` | 1.0 |
+| `min_p` | 0.0 |
+| `presence_penalty` | 1.5 |
+
+See the [Model Log](#model-log) for configured sampling parameters for each model.
+
+### Speculative Decoding (SpecPrefill)
+
+When enabled, the main model generates its first N tokens using a smaller draft model (speculative decoding). This can significantly speed up generation while maintaining quality.
+
+**Currently configured models:**
+- **Qwen3.5-9B**: Uses Qwen3.5-0.8B as drafter
+  - Threshold: 64k tokens (triggers specprefill when context > 64k)
+  - Draft keep ratio: 20% (keep 20% of draft tokens)
+- **Other models**: Speculative decoding not enabled
+
+## Memory Management
+
+Memory pressure builds naturally over long sessions as the KV cache fills. Two habits that keep the system healthy:
+
+**Start a new thread between tasks** — each new conversation resets the KV cache, recovering ~400 MB of wired memory and giving the model a clean context.
+
+Check resource usage with oMLX dashboard, btop or `memory_pressure` command:
+
+For memory pressure, a healthy idle state (model loaded, no active prompt) shows ~25% free, compressor under 500 MB, and zero swap.
 
 ## Troubleshooting
 
@@ -76,5 +145,5 @@ See [model settings](./config/model_settings.json) for the per model configurati
 
 ### Out of memory:
 - Lower context window
-- Enable TurboQuant KV cache (8-bit)
+- Enable TurboQuant KV cache (4-bit)
 - Try smaller model

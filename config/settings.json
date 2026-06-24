@@ -12,14 +12,13 @@
     "preserve_mid_system_cache": true
   },
   "model": {
-    "model_dirs": ["/Users/daniel/models"],
-    "model_dir": "/Users/daniel/models",
+    "model_dirs": ["/Users/bender/models"],
+    "model_dir": "/Users/bender/models",
     "model_fallback": false
   },
   "memory": {
     "prefill_memory_guard": true,
-    "memory_guard_tier": "custom",
-    "memory_guard_custom_ceiling_gb": 24.0,
+    "memory_guard_tier": "aggressive",
     "soft_threshold": 0.85,
     "hard_threshold": 0.95,
     "prefill_safe_zone_ratio": 0.8,
@@ -27,15 +26,15 @@
   },
   "scheduler": {
     "max_concurrent_requests": 1,
-    "embedding_batch_size": 32,
+    "embedding_batch_size": 16,
     "chunked_prefill": true
   },
   "cache": {
     "enabled": true,
     "hot_cache_only": false,
-    "ssd_cache_dir": "/Users/daniel/cache",
-    "ssd_cache_max_size": "128GB",
-    "hot_cache_max_size": "4GB",
+    "ssd_cache_dir": "/Users/bender/cache",
+    "ssd_cache_max_size": "64GB",
+    "hot_cache_max_size": "2GB",
     "initial_cache_blocks": 256
   },
   "auth": {
@@ -63,14 +62,14 @@
   "sampling": {
     "max_context_window": 32768,
     "max_context_window_policy": null,
-    "max_tokens": 32768,
-    "temperature": 0.6,
+    "max_tokens": 8192,
+    "temperature": 0.7,
     "top_p": 0.95,
-    "top_k": 0,
+    "top_k": 20,
     "repetition_penalty": 1.0
   },
   "logging": {
-    "log_dir": "/Users/daniel/logs",
+    "log_dir": "/Users/bender/logs",
     "retention_days": 7
   },
   "claude_code": {

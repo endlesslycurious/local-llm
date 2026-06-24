@@ -78,6 +78,8 @@ brew trust jundot/omlx
 brew install omlx
 ```
 
+> Note: If your using models that use structured generation like Qwen3 then its recommended to install `oMLX` with grammer using `brew install omlx --with-grammar` to get [xgrammar](https://github.com/mlc-ai/xgrammar) installed!
+
 3. Hugging Face CLI - Model downloader.
 
 ```bash
@@ -114,11 +116,32 @@ mkdir ~/.omlx
 
 ## 5. Settings files linked
 
+> There is currently an issue wiht oMLX replacing `model_settings.json` and not respecting the symlink - [github](https://github.com/jundot/omlx/issues/1958).
+
 We will keep the settings files in this repo for change tracking and link them into the `.omlx` directory for `oMLX` to use.
 
 ```bash
-ln -sf ./config/settings.json ~/.omlx/settings.json
-ln -sf ./config/model_settings.json ~/.omlx/model_settings.json
+ln -f ./config/settings.json ~/.omlx/settings.json
+ln -f ./config/model_settings.json ~/.omlx/model_settings.json
+```
+
+Verify by comparing inode numbers (first column) which should be identical on linked files:
+- `467193` for `model_settings.json` 
+- `467194` for `settings.json`
+
+```bash
+ls -li ~/.omlx ./config
+
+./config:
+total 24
+467193 -rw-r--r--  2 bender  staff  4883 Jun 21 15:58 model_settings.json
+467194 -rw-r--r--@ 2 bender  staff  2518 Jun 21 15:57 settings.json
+
+/Users/bender/.omlx:
+total 32
+467193 -rw-r--r--  2 bender  staff  4883 Jun 21 15:58 model_settings.json
+467194 -rw-r--r--@ 2 bender  staff  2518 Jun 21 15:57 settings.json
+511639 -rw-r--r--  1 bender  staff   201 Jun 20 19:13 stats.json
 ```
 
 ### Note:
@@ -130,16 +153,18 @@ ln -sf ./config/model_settings.json ~/.omlx/model_settings.json
 
 ## 6. Configure Firewall
 
+> Note: `oMLX` is actually a python process so the following isn't the correct path, skip this step for now!
+
 Enable `oMLX` to accept incoming connections throught the firewall:
 
 ```bash
-security set-appfirewall-rule -t incoming --app-firewall allow --process "omlx-server"
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /opt/homebrew/bin/omlx
 ```
 
 Verify firewall settings:
 
 ```bash
-sudo /usr/libexec/ApplicationFirewall/socketfilterfw --listapps
+sudo /usr/libexec/ApplicationFirewall/socketfilterfw --list
 ```
 
 ---
@@ -246,5 +271,5 @@ In Zed's `settings.json`, under `language_models`:
 
 In theory everything should be working and you can admistrate `oMLX` via its web admin e.g. `http://<host>.local:8080/admin/dashboard?tab=status`.
 - See [Models](./Models.md) for the list of models I tried and how to download them.
-- See [Tuning](./Tuning.md) for model settings and how to increase the GPU RAM limit on MacOS.
+- See [Tuning](./Tuning.md) for model settings and how to increase the GPU RAM limit on MacOS (highly recommended).
 -
