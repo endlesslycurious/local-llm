@@ -118,5 +118,6 @@ KV Cache Settings:
 
 |   Date  |  Model  | Notes                                                |
 |:-------:|:-------:|------------------------------------------------------|
+| 2026/06 | [Qwen 2.5 Coder](https://huggingface.co/mlx-community/Qwen2.5-Coder-14B-Instruct-4bit) | 14B fits in RAM well but tool calls don't work with oMLX. |
 | 2026/06 | [Qwen 3 Coder](https://huggingface.co/mlx-community/Qwen3-Coder-30B-A3B-Instruct-4bit) | 30B-A3B MoE is interesting but 27B is more capable. |
 | 2026/05 | [Gemma 4](https://huggingface.co/google/gemma-4-12B-it) | Seems highly capable but keeps stopping mid-thought. requiring babysitting to complete tasks. |
