@@ -60,7 +60,23 @@ Enable remote administration without entering password to connect:
 
 ---
 
-## 3. Install Runtime & Dependencies
+## 3. Power / Sleep Settings
+
+Prevent the system from sleeping as its a server, from the terminal run:
+
+```bash
+sudo pmset -a sleep 0 disksleep 0 womp 1 powernap 1
+```
+
+Then verify with:
+
+```bash
+pmset -g
+```
+
+---
+
+## 4. Install Runtime & Dependencies
 
 1. HomeBrew - package manager.
 
@@ -96,7 +112,7 @@ brew install btop
 
 ---
 
-## 4. Directory Structure
+## 5. Directory Structure
 
 Create these working directories for oMLX to hold the models, disk cache and logs:
 
@@ -114,7 +130,7 @@ mkdir ~/.omlx
 
 ---
 
-## 5. Settings files linked
+## 6. Settings files linked
 
 > There is currently an issue wiht oMLX replacing `model_settings.json` and not respecting the symlink - [github](https://github.com/jundot/omlx/issues/1958).
 
@@ -151,7 +167,7 @@ total 32
 
 ---
 
-## 6. Configure Firewall
+## 7. Configure Firewall
 
 > Note: `oMLX` is actually a python process so the following isn't the correct path, skip this step for now!
 
@@ -169,7 +185,7 @@ sudo /usr/libexec/ApplicationFirewall/socketfilterfw --list
 
 ---
 
-## 7. Start oMLX Service
+## 8. Start oMLX Service
 
 `oMLX` when installed via `brew` can use `brew service` to manage app lifespan, see [details](https://github.com/jundot/omlx#homebrew-service).
 
@@ -181,7 +197,7 @@ brew services start omlx
 
 ---
 
-## 8. Verify
+## 9. Verify
 
 Check process exists:
 
@@ -203,7 +219,7 @@ tail -f /Users/<user>/logs/
 
 ---
 
-## 9. Reboot Test
+## 10. Reboot Test
 
 Reboot the Mac Studio:
 
@@ -221,7 +237,7 @@ If successful, the model is running without user login — appliance behaviour c
 
 ---
 
-## 10. Connect from Editor
+## 11. Connect from Editor
 
 Use the OpenAI-compatible endpoint:
 
