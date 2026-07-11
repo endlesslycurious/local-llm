@@ -11,7 +11,7 @@ If the user asks you to 'update the doc' do the following:
 1. Review the oMLX and its model configurations in `config` directory.
 2. Review the documents: `Models.md`, `README.md`, `Setup.md` and `Tuning.md`.
 3. Treating `settings.json` as the source of truth, update `Tuning.md` section on oMLX settings. The interesting settings sections to document as sub-sections under `oMLX settings` are `memory`, `scheduler` (concurrency) and `cache`, ignore other sections.
-4. Treating from `model_settings.json` as the source of truth update `Models.md`. Each model should get its own section in `Models.md`, see the following section for layout, models should be order from latest to oldest by date tried then by model name. For models no longer in the `model_settings.json` should be considered not in use and left in `Models.md` for reference.
+4. Treating from `model_settings.json` as the source of truth update `Models.md`. Each model should get its own section in `Models.md`, see the following section for layout, models should be order from latest to oldest by model name. For models no longer in the `model_settings.json` should be considered not in use and left in `Models.md` for reference.
 5. The User may indicate a model has been retired, its detailed listing should be removed from Models.md and a line added to the retired models table, ask the user for the note/reason.
 
 ### Model details
