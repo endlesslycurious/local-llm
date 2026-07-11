@@ -109,50 +109,11 @@ KV Cache Settings:
 - Lower temperature (0.2) for more deterministic draft predictions.
 - TurboQuant KV cache enabled at 4-bit precision for maximum efficiency.
 
-### Qwen3 14B
-
-| Model | Repo | Params. | Quant | File size | Thinking | Date |
-|:-------:|:-------:|:-----:|:---------:|:-------:|:-------------: |:----:|
-| [Qwen3 14B](https://huggingface.co/Qwen/Qwen3-14B) | [Qwen3-14B](https://huggingface.co/mlx-community/Qwen3-14B-MLX-4bit) | 14B | 4 bit | ~9.8 GB | No | 2026-07 |
-
-Configured basic settings:
-| Context | Max Tokens | Temp | Top P | Top K | Rep. Penalty |
-|:-------:|:-----:|:---------:|:-------:|:-------------: |:----:|
-| 98k | 4k | 0.4 | 0.8 | 20 | 1.0 |
-
-#### Notes
-- Balanced model for general use.
-- TurboQuant KV cache enabled at 4-bit precision with skip last token.
-- Speculative prefill enabled with Qwen3-0.6B drafter.
-
-### Qwen3 0.6B (Drafter)
-
-| Model | Repo | Params. | Quant | File size | Thinking | Date |
-|:-------:|:-------:|:-----:|:---------:|:-------:|:-------------: |:----:|
-| [Qwen3 0.6B](https://huggingface.co/Qwen/Qwen3-0.6B) | [Qwen3-0.6B](https://huggingface.co/mlx-community/Qwen3-0.6B-MLX-4bit) | 0.6B | 4 bit | ~500 MB | No | 2026-07 |
-
-Configured basic settings:
-| Context | Max Tokens | Temp |
-|:-------:|:-----:|:---------:|
-| 4k | 256 | 0.2 |
-
-KV Cache Settings:
-| Setting | Value | Description |
-|:--------:|:------:|:------------|
-| `turboquant_kv_enabled` | false | TurboQuant disabled for KV cache compression |
-| `turboquant_kv_bits` | 4.0 | 4-bit quantization for maximum memory efficiency |
-
-#### Notes
-- Smallest model in the configuration, optimized for prefill phase speed.
-- Lower temperature (0.2) for more deterministic draft predictions.
-- TurboQuant KV cache disabled for this model.
-
----
-
-## Retired Models
+## Tested & Retired Models
 
 |   Date  |  Model  | Notes                                                |
 |:-------:|:-------:|------------------------------------------------------|
+| 2026/07 | [Qwen3 14B](https://huggingface.co/Qwen/Qwen3-14B-MLX-4bit) | More parms than Qwen 3.5 9B, but slower and less capable. |
 | 2026/07 | [DeepSeek Coder V2 Lite](https://huggingface.co/mlx-community/DeepSeek-Coder-V2-Lite-Instruct-4bit) | Fits in RAM, quick responses but didn't support tool calls. |
 | 2026/06 | [Qwen 2.5 Coder](https://huggingface.co/mlx-community/Qwen2.5-Coder-14B-Instruct-4bit) | 14B fits in RAM well but tool calls don't work with oMLX. |
 | 2026/06 | [Qwen 3 Coder](https://huggingface.co/mlx-community/Qwen3-Coder-30B-A3B-Instruct-4bit) | 30B-A3B MoE is interesting but 27B is more capable. |

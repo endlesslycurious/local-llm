@@ -31,28 +31,23 @@ Personal setup and model log for running LLMs locally on Apple Silicon via [oMLX
 ## TLDR - My Current Setup
 
 - I've increased the MacOS GPU RAM limit to 28 GB to be able to run this configuration!
-- An editor or agent that has context pruning *helps allot*; I currently use OpenCode with pruning enabled, mostly via Zed.
-- oMLX caching helps *allot* and Speculative Prefill saves time once context grows large. Spec-Prefill bypasses caching, so a balence is required.
+- An editor or agent that has context pruning *helps allot*; I use [OpenCode](https://opencode.ai) with pruning enabled, mostly via [Zed](https://zed.dev).
+- oMLX caching helps *allot* and Speculative Prefill saves time once context grows large.
+  - Without Spec-Prefill response times are dominated by prompt processing once context grows.
+  - Spec-Prefill does bypass caching though, so a balence is required to benefit from both.
 
-### Daily Driver - Qwen 3.5 9B (4 bit) - 30 tok/s
+### Daily Driver - Qwen 3.5 9B (4 bit) - 38 tok/s
 
 - Using 4-bit turboquant allows this model to have 128k context on the host machine.
 - Thinking mode disabled for more direct, efficient responses.
-- Speculative Prefill using Qwen 3.5 0.8B when context sent is > 48k, helps reduce waiting.
-- Set as default model for daily use, although it does tend to get stuck at times.
+- Speculative Prefill using `Qwen 3.5 0.8B` when context sent is > 48k, helps reduce waiting.
+- Set as default model for daily use, although it does struggle with complexity at times.
 
-### Middle Ground - Qwen 3 14B (4 bit) - 20 tok/s
+### Deep Thinker - Qwen 3.6 27B (4 bit) - 17 tok/s
 
-- Using 4-bit turboquant allows this model to have 96k context on the host machine.
-- Thinking mode disabled for more direct, efficient responses.
-- Speculative Prefill using Qwen 3 0.6B when context sent is > 48k, helps reduce waiting.
-- More capable than the 9B and more context than 27B, *still in testing*.
-
-### Deep Thinker - Qwen 3.6 27B (4 bit) - X tok/s
-
-- A more capable model but due to its large size it can only have a third of the context of 9B, even with 4-bit turboquant!
+- A more capable model but due to its large size it can only have 32k of the context, even with 4-bit turboquant!
 - Thinking mode enabled for increased capability.
-- No Speculative Prefill as context is very limited due to model size.
+- No Speculative Prefill as RAM is very limited due to model + context size.
 
 ## Reference Links
 
