@@ -4,21 +4,31 @@
     "host": "0.0.0.0",
     "port": 8080,
     "log_level": "info",
-    "cors_origins": ["*"],
-    "server_aliases": ["localhost", "127.0.0.1", "Freyr.local"],
+    "cors_origins": [
+      "*"
+    ],
+    "server_aliases": [
+      "localhost",
+      "127.0.0.1",
+      "Freyr.local"
+    ],
     "sse_keepalive_mode": "chunk",
     "auto_start_on_launch": true,
     "burst_decode_mode": "balanced",
     "preserve_mid_system_cache": true
   },
   "model": {
-    "model_dirs": ["/Users/bender/models"],
+    "model_dirs": [
+      "/Users/bender/models"
+    ],
     "model_dir": "/Users/bender/models",
-    "model_fallback": false
+    "model_fallback": false,
+    "hide_helper_models": true
   },
   "memory": {
     "prefill_memory_guard": true,
     "memory_guard_tier": "aggressive",
+    "memory_guard_custom_ceiling_gb": 0.0,
     "soft_threshold": 0.85,
     "hard_threshold": 0.95,
     "prefill_safe_zone_ratio": 0.8,
@@ -91,7 +101,7 @@
     "markitdown_enabled": true,
     "markitdown_expose_model": false,
     "markitdown_max_file_size_mb": 25,
-    "markitdown_max_files_per_request": 5,
+    "markitdown_max_files_per_request": 4,
     "markitdown_pdf_processing_engine": "markitdown"
   },
   "ui": {
